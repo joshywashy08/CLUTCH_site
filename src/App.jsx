@@ -58,7 +58,7 @@ function App() {
         <div className="product-strip">
           <div className="shell strip-inner">
             <span>REUSABLE VINYL POUCH</span><span className="strip-star" aria-hidden="true">✦</span>
-            <span>THREE PLANNED COLORS</span><span className="strip-star" aria-hidden="true">✦</span>
+            <span>TWO LAUNCH COLORS</span><span className="strip-star" aria-hidden="true">✦</span>
             <span>ROOM FOR ONE EXTRA</span>
           </div>
         </div>
@@ -94,15 +94,14 @@ function App() {
         <section className="colors" aria-labelledby="colors-title">
           <div className="shell color-layout">
             <figure className="color-figure">
-              <img src={colorPouches} alt="Fuchsia, lemon and lime CLUTCH pouches arranged diagonally on a lavender backdrop" width="1350" height="900" loading="lazy" />
+              <img src={colorPouches} alt="Fuchsia pink and lemon yellow CLUTCH pouches on a lavender backdrop" width="1350" height="900" loading="lazy" />
               <figcaption>Product concepts</figcaption>
             </figure>
             <div className="color-copy">
-              <h2 id="colors-title">THREE <br />COLORWAYS.</h2>
-              <ul className="swatches" aria-label="Planned colors">
-                <li><span className="swatch fuchsia" aria-hidden="true" />Fuchsia</li>
-                <li><span className="swatch lemon" aria-hidden="true" />Lemon</li>
-                <li><span className="swatch lime" aria-hidden="true" />Lime</li>
+              <h2 id="colors-title">TWO <br />COLORWAYS.</h2>
+              <ul className="swatches" aria-label="Launch colors">
+                <li><span className="swatch fuchsia" aria-hidden="true" />Fuchsia pink</li>
+                <li><span className="swatch lemon" aria-hidden="true" />Lemon yellow</li>
               </ul>
             </div>
           </div>

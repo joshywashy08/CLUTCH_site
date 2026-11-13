@@ -173,7 +173,6 @@ h2 { font-size: clamp(4rem, 8vw, 8rem); }
 .swatch { width: 17px; height: 17px; border: 1px solid var(--ink); border-radius: 50%; }
 .fuchsia { background: #d9327e; }
 .lemon { background: #f2d12e; }
-.lime { background: #8fd14f; }
 
 .pilot { padding-top: clamp(55px, 8vw, 114px); }
 .pilot-ticket { display: grid; grid-template-columns: 1fr minmax(170px, 26%); border: 1px solid var(--ink); background: var(--pink); }

@@ -3,9 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import './ClutchMockup.css';
 
 const COLORS = [
-  { name: 'Fuchsia', hex: '#D9327E' },
-  { name: 'Lemon', hex: '#F2D12E' },
-  { name: 'Lime', hex: '#8FD14F' },
+  { name: 'Fuchsia pink', hex: '#D9327E' },
+  { name: 'Lemon yellow', hex: '#F2D12E' },
 ];
 
 // c = position when closed [x, y]; o = position when open [x, y, rotateZ]
