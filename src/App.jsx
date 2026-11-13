@@ -1,4 +1,3 @@
-import pouch from './assets/clutch-pouch.jpg'
 import colorPouches from './assets/clutch-colors.jpg'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
@@ -50,8 +49,7 @@ function App() {
             </div>
           </div>
           <figure className="hero-figure">
-            <img src={pouch} alt="Fuchsia vinyl zipper pouch with a black CLUTCH Admit One band" width="1254" height="1254" fetchPriority="high" />
-            <span className="hero-spark" aria-hidden="true">✦</span>
+            <img src="/clutch-pouch-preview.jpg" alt="Glossy fuchsia CLUTCH pouch with a black top zipper and horizontal Admit One band" width="1200" height="1200" fetchPriority="high" />
             <div className="size-sticker"><strong>4.5 × 3</strong><span>INCHES</span></div>
             <figcaption>Product concept · Fuchsia</figcaption>
           </figure>
@@ -96,7 +94,7 @@ function App() {
         <section className="colors" aria-labelledby="colors-title">
           <div className="shell color-layout">
             <figure className="color-figure">
-              <img src={colorPouches} alt="Fuchsia, lemon and lime concept pouches stacked together" width="1350" height="900" loading="lazy" />
+              <img src={colorPouches} alt="Fuchsia, lemon and lime CLUTCH pouches arranged diagonally on a lavender backdrop" width="1350" height="900" loading="lazy" />
               <figcaption>Product concepts</figcaption>
             </figure>
             <div className="color-copy">
