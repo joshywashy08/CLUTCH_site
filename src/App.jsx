@@ -14,7 +14,7 @@ const contents = [
 ]
 
 const questions = [
-  ['When can I get one?', 'We’re planning a spring 2027 pilot at Emory’s Oxford College and Atlanta campus. The target price is $20, and pre-orders are still in the works.'],
+  ['When can I get one?', 'We’re planning a spring 2027 pilot at Emory’s Oxford College. The target price is $20, and pre-orders are still in the works.'],
   ['Can my club or chapter get a box?', 'The pilot is designed for Oxford students and clubs. We’re also planning boxes of 25 kits with bonus refills for fraternities and sororities.'],
   ['What can the drink tests tell me?', 'We’re still choosing a supplier. The included card will explain how to use the selected test and what it can detect. A negative result can miss substances.'],
 ]
