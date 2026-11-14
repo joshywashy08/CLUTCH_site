@@ -13,7 +13,14 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="1200" />
     <meta property="og:image:alt" content="Glossy fuchsia CLUTCH pouch with a horizontal Admit One band on a lavender background" />
-    <meta name="theme-color" content="#fcf8ef" />
+    <script>
+      try {
+        const theme = localStorage.getItem('clutch-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {
+        // The site follows the system theme when storage is unavailable.
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -1,22 +1,47 @@
+import { useEffect, useState } from 'react'
 import colorPouches from './assets/clutch-colors.jpg'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
-
-const contents = [
-  ['2', 'Drink-spike tests', 'One for you and a spare.'],
-  ['2', 'Condoms', 'Individually wrapped.'],
-  ['1', 'Vomit bag', 'For when the night takes a wrong (?) turn.'],
-  ['1', 'Electrolyte stick', 'Mix it with water when you get home.'],
-  ['1', 'Pack of gum', 'Easy to share.'],
-  ['1', 'Instruction card', 'Test directions and who to call.'],
-  ['+', 'Room for your own thing', 'Lip gloss, cologne, whatever you always bring.'],
-]
 
 const questions = [
   ['When can I get one?', 'We’re planning a spring 2027 pilot at Emory’s Oxford College. The target price is $20, and pre-orders are still in the works.'],
   ['Can my club or chapter get a box?', 'The pilot is designed for Oxford students and clubs. We’re also planning boxes of 25 kits with bonus refills for fraternities and sororities.'],
   ['What can the drink tests tell me?', 'We’re still choosing a supplier. The included card will explain how to use the selected test and what it can detect. A negative result can miss substances.'],
 ]
+
+function ThemeToggle() {
+  const [isDark, setIsDark] = useState(() => {
+    const theme = document.documentElement.dataset.theme
+    return theme ? theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
+
+  useEffect(() => {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+    function syncSystemTheme() {
+      if (!document.documentElement.dataset.theme) setIsDark(systemTheme.matches)
+    }
+    syncSystemTheme()
+    systemTheme.addEventListener('change', syncSystemTheme)
+    return () => systemTheme.removeEventListener('change', syncSystemTheme)
+  }, [])
+
+  function toggleTheme() {
+    const theme = isDark ? 'light' : 'dark'
+    document.documentElement.dataset.theme = theme
+    setIsDark(!isDark)
+    try {
+      localStorage.setItem('clutch-theme', theme)
+    } catch {
+      // The theme still applies to the current page.
+    }
+  }
+
+  return (
+    <button className="theme-toggle" type="button" aria-label="Dark mode" aria-pressed={isDark} onClick={toggleTheme}>
+      <span aria-hidden="true">{isDark ? '☀' : '☾'}</span>
+    </button>
+  )
+}
 
 function App() {
   return (
@@ -33,6 +58,7 @@ function App() {
             <a href="#kit">The kit</a>
             <a className="nav-faq" href="#faq">FAQ</a>
             <a className="nav-pilot" href="#pilot">Pilot details <span aria-hidden="true">↗</span></a>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -63,31 +89,11 @@ function App() {
           </div>
         </div>
 
-        <section className="kit shell" id="kit" aria-labelledby="kit-title">
-          <div className="kit-intro">
-            <p className="eyebrow"><span aria-hidden="true">✦</span> The kit</p>
-            <h2 id="kit-title">WHAT’S<br />INSIDE.</h2>
-            <p>Zip it into your going-out bag or slip it into a pocket. Refill the pouch whenever you need to.</p>
-            <a className="text-link" href="#model">Explore it in 3D <span aria-hidden="true">↘</span></a>
-          </div>
-          <ul className="contents">
-            {contents.map(([quantity, name, description]) => (
-              <li key={name}>
-                <span className="quantity" aria-hidden={quantity === '+' ? true : undefined}>{quantity}</span>
-                <div><h3>{name}</h3><p>{description}</p></div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="model" id="model" aria-labelledby="model-title">
-          <div className="shell model-layout">
-            <div className="model-intro">
-              <p className="eyebrow"><span aria-hidden="true">✦</span> 3D concept</p>
-              <h2 id="model-title">TURN IT<br />OVER.</h2>
-              <p>Drag to spin the pouch, open it up and tap anything inside to see what it’s for.</p>
-            </div>
-            <ClutchMockup showHeader={false} />
+        <section className="kit" id="kit" aria-labelledby="kit-title">
+          <div className="shell">
+            <h2 id="kit-title">WHAT’S INSIDE.</h2>
+            <p className="kit-hint">Drag to turn the pouch, or select an item to see it in 3D.</p>
+            <ClutchMockup />
           </div>
         </section>
 

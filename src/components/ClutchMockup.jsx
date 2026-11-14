@@ -11,40 +11,40 @@ const COLORS = [
 const ITEMS = [
   { id: 'card', cls: 'i-card', w: 245, h: 140, z: -24, c: [0, 8], o: [-255, -385, -6],
     body: (<><b>CLUTCH</b><span>How to use your test</span><small>Who to call · what to watch for</small></>),
-    name: 'Insert card', qty: '1 card',
+    name: 'Instruction card', count: 1, unit: 'card',
     text: 'Shows how to use the drink test, the signs that someone may have been drugged, and who to call. It also says plainly that a negative test is not a guarantee.' },
   { id: 'bag', cls: 'i-bag', w: 266, h: 77, z: -17, c: [0, 52], o: [285, -390, 6],
     body: (<><span>Vomit bag</span><small>folded flat</small></>),
-    name: 'Vomit bag', qty: '1 bag, folded flat',
+    name: 'Vomit bag', count: 1, unit: 'bag, folded flat',
     text: 'For the friend who needs it. Saves an Uber, a dorm room or a formal dress.' },
   { id: 'electro', cls: 'i-electro', w: 224, h: 98, z: -10, c: [0, -34], o: [20, -400, 2],
     body: (<><span>ELECTROLYTE MIX</span><small>1 stick · folds in half to fit</small></>),
-    name: 'Electrolyte stick', qty: '1 stick',
+    name: 'Electrolyte stick', count: 1, unit: 'stick',
     text: 'A sodium-and-glucose drink mix, the same idea as medical oral rehydration solution. Mix it with water as the packet directs, before bed or the morning after. It helps you rehydrate. We make no hangover claims.' },
   { id: 'condom1', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -3, c: [-78, 22], o: [-335, -215, -8],
-    body: <span>Condom</span>, name: 'Condoms', qty: '2 condoms', text: 'Be prepared. Two per kit.' },
+    body: <span>Condom</span>, name: 'Condoms', count: 2, unit: 'condoms', text: 'Individually wrapped.' },
   { id: 'condom2', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: 4, c: [78, 22], o: [-180, -225, 5],
-    body: <span>Condom</span>, name: 'Condoms', qty: '2 condoms', text: 'Be prepared. Two per kit.' },
+    body: <span>Condom</span>, name: 'Condoms' },
   { id: 'test1', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 11, c: [-52, -44], o: [25, -270, -3],
     body: (<><span>DRINK TEST</span><small>single use</small></>),
-    name: 'Drink-spike tests', qty: '2 tests',
+    name: 'Drink-spike tests', count: 2, unit: 'tests',
     text: 'Check a drink if something feels off. Two per kit, so there is one for a refill or a friend. A negative result is not a guarantee.' },
   { id: 'test2', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 17, c: [52, 44], o: [40, -190, 3],
     body: (<><span>DRINK TEST</span><small>single use</small></>),
-    name: 'Drink-spike tests', qty: '2 tests',
-    text: 'Check a drink if something feels off. Two per kit, so there is one for a refill or a friend. A negative result is not a guarantee.' },
+    name: 'Drink-spike tests' },
   { id: 'gum', cls: 'i-gum', w: 196, h: 56, z: 23, c: [0, 0], o: [285, -250, 5],
-    body: <span>GUM · 5 sticks</span>, name: 'Gum', qty: '1 pack of 5 sticks', text: 'Fresh breath all night.' },
+    body: <span>GUM · 5 sticks</span>, name: 'Pack of gum', count: 1, unit: 'pack of 5 sticks', text: 'Fresh breath all night.' },
   { id: 'slot', cls: 'i-slot', w: 160, h: 60, z: 27, c: [60, -70], o: [290, -160, -4],
     body: (<><span>Your item</span><small>empty slot</small></>),
-    name: 'Empty slot', qty: 'Room for one small item',
+    name: 'Room for your own thing',
     text: 'Space left for your own lip gloss, travel cologne or a hair tie.' },
 ];
 
 const keyOf = (it) => it.pair || it.id;
-const CHIP_ITEMS = ITEMS.filter((it, i) => ITEMS.findIndex((x) => keyOf(x) === keyOf(it)) === i);
+const CONTENTS = ['test', 'condom', 'bag', 'electro', 'gum', 'card', 'slot']
+  .map((key) => ITEMS.find((it) => keyOf(it) === key));
 
-export default function ClutchMockup({ showHeader = true, showNotes = true }) {
+export default function ClutchMockup() {
   const [open, setOpenState] = useState(false);
   const [rot, setRot] = useState({ rx: -16, ry: -30 });
   const [selKey, setSelKey] = useState(null);
@@ -128,123 +128,120 @@ export default function ClutchMockup({ showHeader = true, showNotes = true }) {
   const selected = ITEMS.find((it) => keyOf(it) === selKey);
 
   return (
-    <div className="clutch-mockup" style={{ '--c': color }}>
-      {showHeader && (
-        <header>
-          <div>
-            <h1>CLUTCH</h1>
-            <p className="tag">Came in clutch. The going-out kit that fits in a purse.</p>
-          </div>
-          <p className="hint">Drag to turn · tap an item to see what it&apos;s for</p>
-        </header>
-      )}
-
-      <div
-        ref={stageRef}
-        className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '')}
-        style={{ height: Math.round(680 * scale) }}
-        aria-label="3D model of the Clutch kit"
-        onPointerDown={onPointerDown}
-      >
-        <div className="scaler" style={{ transform: `scale(${scale})` }}>
-          <div className="lift">
-            <div className="shadow" />
-            <div className="rig" style={{ transform: `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)` }}>
-              <div className="face back"><div className="edge" /><div className="tagline">came in clutch.</div><div className="band plain" /></div>
-              <div className="face side left"><div className="band plain" /></div>
-              <div className="face side right"><div className="band plain" /></div>
-              <div className="face bottom" />
-              <div className="items">
-                {ITEMS.map((it) => {
-                  const p = open ? it.o : it.c;
-                  const z = open ? it.z * 1.6 : it.z;
-                  const r = open ? p[2] || 0 : 0;
-                  return (
-                    <button
-                      key={it.id}
-                      type="button"
-                      className={`item ${it.cls}${selKey && keyOf(it) === selKey ? ' sel' : ''}`}
-                      style={{
-                        width: it.w, height: it.h,
-                        transform: `translate3d(${p[0] - it.w / 2}px, ${p[1] - it.h / 2}px, ${z}px) rotateZ(${r}deg)`,
-                      }}
-                      tabIndex={open ? 0 : -1}
-                      aria-label={it.name}
-                      onClick={() => { if (!moved.current) select(it); }}
-                    >
-                      {it.body}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="hinge"><div className="flap"><div className="teeth" /><div className="pull" /></div></div>
-              <div className="face front">
-                <div className="edge" />
-                <div className="logo">CLUTCH</div>
-                <div className="band">CLUTCH · ADMIT ONE · CLUTCH · ADMIT ONE</div>
-                <div className="stitch" />
+    <div className="clutch-mockup" id="model" style={{ '--c': color }}>
+      <div className="viewer">
+        <div
+          ref={stageRef}
+          className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '')}
+          style={{ height: Math.round(680 * scale) }}
+          role="group"
+          aria-label="3D model of the Clutch kit"
+          onPointerDown={onPointerDown}
+        >
+          <div className="scaler" style={{ transform: `scale(${scale})` }}>
+            <div className="lift">
+              <div className="shadow" />
+              <div className="rig" style={{ transform: `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)` }}>
+                <div className="face back"><div className="edge" /><div className="tagline">came in clutch.</div><div className="band plain" /></div>
+                <div className="face side left"><div className="band plain" /></div>
+                <div className="face side right"><div className="band plain" /></div>
+                <div className="face bottom" />
+                <div className="items">
+                  {ITEMS.map((it) => {
+                    const p = open ? it.o : it.c;
+                    const z = open ? it.z * 1.6 : it.z;
+                    const r = open ? p[2] || 0 : 0;
+                    return (
+                      <button
+                        key={it.id}
+                        type="button"
+                        className={`item ${it.cls}${selKey && keyOf(it) === selKey ? ' sel' : ''}`}
+                        style={{
+                          width: it.w, height: it.h,
+                          transform: `translate3d(${p[0] - it.w / 2}px, ${p[1] - it.h / 2}px, ${z}px) rotateZ(${r}deg)`,
+                        }}
+                        tabIndex={open ? 0 : -1}
+                        aria-label={it.name}
+                        onClick={() => { if (!moved.current) select(it); }}
+                      >
+                        {it.body}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="hinge"><div className="flap"><div className="teeth" /><div className="pull" /></div></div>
+                <div className="face front">
+                  <div className="edge" />
+                  <div className="logo">CLUTCH</div>
+                  <div className="band">CLUTCH · ADMIT ONE · CLUTCH · ADMIT ONE</div>
+                  <div className="stitch" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="controls">
-        <div className="group">
-          <button className="btn primary" type="button" onClick={() => setOpen(!open)}>
-            {open ? 'Close the kit' : 'Open the kit'}
-          </button>
-          <button className="btn" type="button" onClick={flip}>
-            {flipped ? 'Flip to front' : 'Flip to back'}
-          </button>
-        </div>
-        <div className="group">
-          <span className="lbl">Color</span>
-          {COLORS.map((c) => (
-            <button
-              key={c.hex}
-              className="sw"
-              type="button"
-              aria-label={c.name}
-              aria-pressed={color === c.hex}
-              style={{ background: c.hex }}
-              onClick={() => setColor(c.hex)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="panel" aria-live="polite">
-        <h2>{selected ? selected.name : "What's inside"}</h2>
-        <p>
-          {selected ? (
-            <><span className="q">{selected.qty}.</span> {selected.text}</>
-          ) : (
-            'Open the kit, then tap any item. Everything packs into a 4.5 × 3 in pouch.'
-          )}
-        </p>
-        <div className="chips">
-          {CHIP_ITEMS.map((it) => (
-            <button
-              key={keyOf(it)}
-              type="button"
-              className="chip"
-              aria-pressed={keyOf(it) === selKey}
-              onClick={() => select(it)}
-            >
-              {it.name}
+        <div className="controls">
+          <div className="group">
+            <button className="btn primary" type="button" onClick={() => setOpen(!open)}>
+              {open ? 'Close the kit' : 'Open the kit'}
             </button>
-          ))}
+            <button className="btn" type="button" onClick={flip}>
+              {flipped ? 'Flip to front' : 'Flip to back'}
+            </button>
+          </div>
+          <div className="group">
+            <span className="lbl">Color</span>
+            {COLORS.map((c) => (
+              <button
+                key={c.hex}
+                className="sw"
+                type="button"
+                aria-label={c.name}
+                aria-pressed={color === c.hex}
+                style={{ background: c.hex }}
+                onClick={() => setColor(c.hex)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
-      {showNotes && (
-        <div className="notes">
-          <p>Drawn to scale at 70 px = 1 in. The pouch is 4.5 × 3 in; its packed depth of about 0.9 in and the item sizes are estimates until a physical sample is packed.</p>
-          <p>A drink test helps you check a drink. A negative result is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
-          <p>Concept mockup. Contents, colors and price may change after the pilot.</p>
+      <div className="inventory">
+        <ul className="contents" aria-label="Kit contents">
+          {CONTENTS.map((it) => (
+            <li key={keyOf(it)}>
+              <button
+                type="button"
+                aria-pressed={keyOf(it) === selKey}
+                onClick={() => select(it)}
+              >
+                <span className="quantity" aria-hidden={it.count ? undefined : true}>{it.count ?? '+'}</span>
+                {it.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="panel" aria-live="polite">
+          {selected ? (
+            <>
+              <h3>{selected.name}</h3>
+              <p>
+                {selected.count && <strong>{selected.count} {selected.unit}. </strong>}
+                {selected.text}
+              </p>
+            </>
+          ) : (
+            <p>Everything packs into a refillable 4.5 × 3 in pouch.</p>
+          )}
         </div>
-      )}
+      </div>
+
+      <div className="notes">
+        <p>The pouch is 4.5 × 3 in. Its packed depth of about 0.9 in and the item sizes are estimates until a physical sample is packed.</p>
+        <p>A drink test helps you check a drink. A negative result is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
+        <p>Concept mockup. Contents, colors and price may change after the pilot.</p>
+      </div>
     </div>
   );
 }

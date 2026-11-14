@@ -1,16 +1,26 @@
 :root {
   font-family: 'DM Sans', Arial, sans-serif;
-  color: #191718;
-  background: #fcf8ef;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--surface);
   font-synthesis: none;
   --ink: #191718;
   --paper: #fcf8ef;
   --pink: #ff4ca4;
-  --magenta: #cb005f;
   --lime: #dcf755;
-  --line: #c9c2b6;
+  --text: light-dark(var(--ink), var(--paper));
+  --surface: light-dark(var(--paper), #1b171d);
+  --accent: light-dark(#cb005f, #ff78b8);
+  --edge: light-dark(var(--ink), #857583);
+  --line: light-dark(#c9c2b6, #534751);
+  --color-surface: light-dark(#eee2ff, #2c2133);
+  --strip-surface: light-dark(var(--lime), #252917);
+  --strip-text: light-dark(var(--ink), var(--lime));
   --display: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
 }
+
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -20,7 +30,7 @@ body { margin: 0; min-width: 280px; }
 
 a { color: inherit; text-decoration: none; }
 
-a:focus-visible, summary:focus-visible {
+a:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 5px;
 }
