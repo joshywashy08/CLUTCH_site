@@ -85,7 +85,7 @@ function App() {
             <h1 id="hero-title">CAME IN<br /><em>CLUTCH.</em></h1>
             <p className="hero-description">The stuff you end up looking for at 1 a.m., packed in one pocket-sized pouch.</p>
             <div className="hero-actions">
-              <SectionLink className="button button-dark" to="kit">See what’s inside <span aria-hidden="true">↘</span></SectionLink>
+              <SectionLink className="button button-dark" to="kit-title">See what’s inside <span aria-hidden="true">↘</span></SectionLink>
               <div className="price"><strong>$20</strong><span>Target price</span></div>
             </div>
           </div>
@@ -106,7 +106,7 @@ function App() {
 
         <section className="kit" id="kit" tabIndex={-1} aria-labelledby="kit-title">
           <div className="shell">
-            <h2 id="kit-title">WHAT’S INSIDE.</h2>
+            <h2 id="kit-title" tabIndex={-1}>WHAT’S INSIDE.</h2>
             <p className="kit-hint">Drag to turn the pouch, or select an item to see it in 3D.</p>
             <ClutchMockup />
           </div>

@@ -160,7 +160,7 @@ h2 { font-size: clamp(4rem, 8vw, 8rem); }
 .text-link { font-weight: 700; font-size: .9rem; }
 
 .kit { padding-block: clamp(32px, 5vw, 68px); }
-.kit h2 { font-size: clamp(3rem, 7.5vw, 7rem); }
+.kit h2 { font-size: clamp(3rem, 7.5vw, 7rem); scroll-margin-top: 16px; }
 .kit-hint { margin-block: 12px 20px; line-height: 1.5; }
 
 .colors { background: var(--color-surface); border-block: 1px solid var(--edge); }
