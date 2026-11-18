@@ -190,7 +190,7 @@ export default function ClutchMockup() {
         <button type="button" className="reset" onClick={() => { setRot(REST); setTouched(true); }}>Reset view</button>
       </div>
       )}
-      <p className="notes">Concept model at 4.5 × 3 in. Item sizes are estimates until a sample is packed. A negative drink test is not a guarantee.</p>
+      <p className="notes">Concept model rendered with CSS at 4.5 × 3 in. Item sizes are estimates until a sample is packed. A negative drink test is not a guarantee.</p>
     </div>
   );
 }
