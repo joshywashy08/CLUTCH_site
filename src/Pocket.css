@@ -1,0 +1,65 @@
+/* CLUTCH Pocket concept page. Shares the homepage's header, type and buttons (App.css). */
+.pocket-hero { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px); align-items: center; padding-block: clamp(28px, 4.5vw, 60px); }
+.concept-flag { display: inline-block; padding: 8px 12px; border: 2px dashed var(--text); font: 700 .8rem/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
+.pocket-note { max-width: 40ch; margin-top: 18px; padding-left: 14px; border-left: 6px solid var(--fuchsia); color: var(--muted); }
+
+.pocket-figure { display: grid; gap: 10px; }
+.pocket-render { position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; border: 2px solid var(--text); background: #ede6dc; cursor: pointer; overflow: hidden; }
+.pocket-render img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; user-select: none; -webkit-user-select: none; }
+.pocket-render img.is-shown { opacity: 1; }
+.pocket-render:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.pocket-figure figcaption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; }
+
+.pocket-section { padding-top: clamp(48px, 7vw, 88px); }
+.section-sub { margin-block: 10px 22px; color: var(--muted); }
+
+.spec-grid { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; border: 2px solid var(--text); }
+.spec-grid div { padding: 16px 18px 18px; border-left: 2px solid var(--text); border-top: 2px solid var(--text); }
+.spec-grid div:nth-child(4n + 1) { border-left: 0; }
+.spec-grid div:nth-child(-n + 4) { border-top: 0; }
+.spec-grid dt { margin-bottom: 6px; font: 700 .74rem/1 var(--display); letter-spacing: .14em; text-transform: uppercase; }
+.spec-grid dd { margin: 0; font: 700 1.05rem/1.3 var(--display); }
+.spec-grid div:last-child { background: var(--ink); color: #fff; }
+.spec-grid div:last-child dd { color: var(--fuchsia); font-size: 1.3rem; }
+
+.element-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; list-style: none; margin: 0; padding: 0; }
+.element-list li { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 2px solid var(--text); }
+.element-list b { flex: 0 0 36px; height: 36px; display: grid; place-items: center; background: var(--ink); color: #fff; font: 700 1.05rem/1 var(--display); box-shadow: 0 0 0 1px light-dark(transparent, #4a4b55); }
+.element-list strong { display: block; margin-bottom: 4px; font: 700 1rem/1.1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
+
+.scale-figure { position: relative; border: 2px solid var(--text); background: #ede6dc; }
+.scale-figure img { width: 100%; height: auto; }
+.scale-figure figcaption { position: absolute; left: 12px; bottom: 10px; color: #4d4b48; font-size: .78rem; }
+.compare-wrap { margin-top: 14px; overflow-x: auto; }
+.compare { width: 100%; min-width: 520px; border-collapse: collapse; border: 2px solid var(--text); }
+.compare th, .compare td { padding: 12px 14px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.compare thead th { background: var(--ink); color: #fff; font: 700 .9rem/1 var(--display); letter-spacing: .12em; text-transform: uppercase; border-top: 0; }
+.compare tbody th { font: 700 .82rem/1.3 var(--display); letter-spacing: .1em; text-transform: uppercase; }
+.pocket-fine { margin: 18px 0 clamp(48px, 7vw, 88px); color: var(--muted); font-size: .82rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pocket-copy > * { animation: rise .7s var(--ease) both; }
+  .pocket-copy > :nth-child(2) { animation-delay: .08s; }
+  .pocket-copy > :nth-child(3) { animation-delay: .16s; }
+  .pocket-copy > :nth-child(4) { animation-delay: .24s; }
+  .pocket-copy .h1-band { animation: band-wipe .7s .35s var(--ease) both; }
+  .pocket-render { animation: rise .8s .15s var(--ease) both; }
+  .pocket-render img { transition: opacity .45s ease, transform .6s var(--ease); }
+  .pocket-render img:not(.is-shown) { transform: translateY(16px) rotate(-3deg); }
+  .pocket-render:hover img.is-shown { transform: translateY(-6px); }
+}
+
+@media (max-width: 900px) {
+  .pocket-hero { grid-template-columns: 1fr; }
+  .spec-grid { grid-template-columns: 1fr 1fr; }
+  .spec-grid div { border-top: 2px solid var(--text); border-left: 2px solid var(--text); }
+  .spec-grid div:nth-child(odd) { border-left: 0; }
+  .spec-grid div:nth-child(-n + 2) { border-top: 0; }
+}
+
+@media (max-width: 600px) {
+  .compare { min-width: 0; table-layout: fixed; font-size: .88rem; }
+  .compare th, .compare td { padding: 10px 8px; }
+  .compare th:first-child { width: 26%; }
+  .scale-figure figcaption { position: static; padding: 0 10px 8px; }
+}

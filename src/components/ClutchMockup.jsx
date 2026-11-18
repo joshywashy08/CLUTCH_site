@@ -1,268 +1,139 @@
-'use client';
 import { useEffect, useRef, useState } from 'react';
 import './ClutchMockup.css';
 
+// Compact 3D model of the pouch. Click the zipper (or the button below) and the contents open in an overlay.
+
 const COLORS = [
-  { name: 'Fuchsia', value: '#d9327e' },
-  { name: 'Bone', value: '#ede6dc' },
+  { key: 'fuchsia', name: 'Fuchsia', value: '#d9327e' },
+  { key: 'bone', name: 'Bone', value: '#ede6dc' },
 ];
 
-// Scale: 70px = 1 inch (pouch face 315 × 210 = 4.5 × 3 in, packed depth 63 = 0.9 in).
-// c = position packed inside the pouch [x, y]; o = position laid out when open [x, y, rotateZ].
-// The open layout is a flat lay: insert card centered, protection on the left, extras on the right.
-const ITEMS = [
-  { id: 'card', cls: 'i-card', w: 245, h: 140, z: -24, c: [0, 8], o: [0, -400, 0],
-    body: (<><b>CLUTCH</b><span>Read before you go out</span><small>How to test · who to call</small></>),
-    name: 'Instruction card', count: 1, unit: 'card',
-    text: 'How to use the drink test, the signs someone may have been drugged, and who to call. It says plainly that a negative test is not a guarantee.' },
-  { id: 'condom1', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -12, c: [-78, 18], o: [-368, -400, 0],
-    body: <span>Condom</span>, name: 'Condoms', count: 2, unit: 'condoms', text: 'Individually wrapped.' },
-  { id: 'condom2', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -6, c: [78, 18], o: [-218, -400, 0],
-    body: <span>Condom</span>, name: 'Condoms' },
-  { id: 'test1', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 4, c: [-52, -42], o: [-293, -285, 0],
-    body: (<><span>DRINK TEST</span><small>single use</small></>),
-    name: 'Drink-spike tests', count: 2, unit: 'tests',
-    text: 'Check a drink if something feels off. Two per kit, so there is one for a refill or a friend. A negative result is not a guarantee.' },
-  { id: 'test2', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 10, c: [52, 42], o: [-293, -208, 0],
-    body: (<><span>DRINK TEST</span><small>single use</small></>),
-    name: 'Drink-spike tests' },
-  { id: 'bag', cls: 'i-bag', w: 266, h: 77, z: -18, c: [0, 52], o: [290, -430, 0],
-    body: (<><span>Vomit bag</span><small>folded flat</small></>),
-    name: 'Vomit bag', count: 1, unit: 'bag, folded flat',
-    text: 'For the friend who needs it. Saves an Uber, a dorm room or a formal dress.' },
-  { id: 'gum', cls: 'i-gum', w: 196, h: 56, z: 16, c: [0, 0], o: [290, -352, 0],
-    body: <span>GUM · 5 sticks</span>, name: 'Pack of gum', count: 1, unit: 'pack of 5 sticks', text: 'Fresh breath all night.' },
-  { id: 'slot', cls: 'i-slot', w: 196, h: 60, z: 22, c: [60, -64], o: [290, -275, 0],
-    body: (<><span>Your item</span><small>empty slot</small></>),
-    name: 'Empty slot for your own item',
-    text: 'The kit leaves one slot empty on purpose. Add your own lip gloss, travel cologne or a hair tie.' },
+// What each item is for. Keep it true: no safety promises, no accuracy numbers.
+// art: how the item is drawn in the overlay (CSS class, size in px, how many).
+const CONTENTS = [
+  { key: 'test', name: 'Drink-spike test', count: '1', text: 'Check a drink if something feels off. A negative result is not a guarantee.',
+    art: { cls: 'i-test', w: 150, h: 54, n: 1, body: (<><span>DRINK TEST</span><small>single use</small></>) } },
+  { key: 'condom', name: 'Condoms', count: '2', text: 'Individually wrapped. Two, because plans change.',
+    art: { cls: 'i-condom', w: 76, h: 76, n: 2, body: <span>Condom</span> } },
+  { key: 'bandage', name: 'Bandages', count: '2', text: 'For the blister your shoes give you by midnight, or a scrape on the walk home.',
+    art: { cls: 'i-bandage', w: 150, h: 36, n: 2, stack: true, body: <span>Bandage</span> } },
+  { key: 'bag', name: 'Vomit bag', count: '1', text: 'Folded flat. Saves an Uber, a dorm room or a formal dress.',
+    art: { cls: 'i-bag', w: 170, h: 54, n: 1, body: (<><span>Vomit bag</span><small>folded flat</small></>) } },
+  { key: 'mint', name: 'Mints', count: '2', text: 'Individually wrapped. One for you, one for whoever needs it.',
+    art: { cls: 'i-mint', w: 64, h: 42, n: 2, body: <span>MINT</span> } },
+  { key: 'card', name: 'Instruction card', count: '1', text: 'How to use the drink test, signs someone may have been drugged, and who to call. It says plainly that a negative test is not a guarantee.',
+    art: { cls: 'i-card', w: 150, h: 86, n: 1, body: (<><b>CLUTCH</b><small>Read before you go out</small></>) } },
+  { key: 'slot', name: 'Your slot', count: '+', text: 'Left empty on purpose, and it’s part of the kit. Lip gloss, travel cologne, earplugs, a hair tie: whatever you’d turn around for.',
+    art: { cls: 'i-slot', w: 150, h: 50, n: 1, body: (<><span>Your item</span><small>empty slot</small></>) } },
 ];
-
-const keyOf = (it) => it.pair || it.id;
-const CONTENTS = ['test', 'condom', 'bag', 'gum', 'card', 'slot']
-  .map((key) => ITEMS.find((it) => keyOf(it) === key));
 
 export default function ClutchMockup() {
-  const [open, setOpenState] = useState(false);
-  const [rot, setRot] = useState({ rx: -16, ry: -30 });
-  const [selKey, setSelKey] = useState(null);
+  const [open, setOpen] = useState(false);
   const [color, setColor] = useState(COLORS[0]);
-  const [flipped, setFlipped] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const [scale, setScale] = useState(1);
-  const [idle, setIdle] = useState(true); // gentle sway until the visitor touches the model
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const dialogRef = useRef(null);
+  const still = useRef(false);
 
-  const stageRef = useRef(null);
-  const drag = useRef(null);
-  const moved = useRef(false);
-  const rotRef = useRef(rot);
-  const touched = useRef(false);
-  useEffect(() => { rotRef.current = rot; }, [rot]);
-
-  const setOpen = (v) => {
-    setOpenState(v);
-    setFlipped(false);
-    if (v) setRot({ rx: -8, ry: -12 });
-    else { setRot({ rx: -16, ry: -30 }); setSelKey(null); }
-  };
-
-  const select = (it) => {
-    touched.current = true;
-    setIdle(false);
-    if (!open) setOpen(true);
-    setSelKey(keyOf(it));
-  };
-
-  const flip = () => {
-    const ry = rot.ry;
-    const back = Math.abs((((ry % 360) + 360) % 360) - 180) < 60;
-    setRot({ rx: -10, ry: back ? (open ? -12 : -30) : 180 });
-    setFlipped(!back);
-  };
-
-  // Drag to rotate
   useEffect(() => {
-    const onMove = (e) => {
-      const d = drag.current;
-      if (!d) return;
-      const dx = e.clientX - d.x, dy = e.clientY - d.y;
-      if (!moved.current && Math.abs(dx) + Math.abs(dy) < 6) return;
-      moved.current = true;
-      setDragging(true);
-      setRot({ ry: d.ry + dx * 0.5, rx: Math.max(-75, Math.min(75, d.rx - dy * 0.4)) });
-    };
-    const onEnd = () => {
-      if (!drag.current) return;
-      drag.current = null;
-      setDragging(false);
-      setTimeout(() => { moved.current = false; }, 0);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onEnd);
-    window.addEventListener('pointercancel', onEnd);
-    return () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onEnd);
-      window.removeEventListener('pointercancel', onEnd);
-    };
+    still.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
 
-  // Open the kit by itself the first time it scrolls into view, unless the visitor already touched it.
+  // Keep React state and the native dialog in step. showModal() gives focus trapping and Esc for free.
   useEffect(() => {
-    const el = stageRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const io = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      io.disconnect();
-      if (!touched.current) setOpen(true);
-    }, { threshold: 0.6 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    const d = dialogRef.current;
+    if (!d) return;
+    if (open && !d.open) d.showModal();
+    if (!open && d.open) d.close();
+  }, [open]);
 
-  // Scale the 880px scene down to fit narrow containers
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    const fit = () => setScale(Math.min(1, el.clientWidth / 930));
-    fit();
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', fit);
-      return () => window.removeEventListener('resize', fit);
-    }
-    const ro = new ResizeObserver(fit);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  const onPointerDown = (e) => {
-    touched.current = true;
-    setIdle(false);
-    drag.current = { x: e.clientX, y: e.clientY, rx: rotRef.current.rx, ry: rotRef.current.ry };
-    moved.current = false;
+  // The pouch leans toward the mouse. No dragging, so it can't end up upside down.
+  const onPointerMove = (e) => {
+    if (e.pointerType !== 'mouse' || still.current) return;
+    const box = e.currentTarget.getBoundingClientRect();
+    setTilt({ x: (e.clientX - box.left) / box.width - 0.5, y: (e.clientY - box.top) / box.height - 0.5 });
   };
 
-  const selected = ITEMS.find((it) => keyOf(it) === selKey);
+  const rx = -16 - tilt.y * 14;
+  const ry = -20 + tilt.x * 24;
 
   return (
-    <div className="clutch-mockup" id="model" style={{ '--c': color.value }}>
-      <div className="viewer">
-        <div
-          ref={stageRef}
-          className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '') + (idle ? ' idle' : '')}
-          style={{ height: Math.round(680 * scale) }}
-          role="group"
-          aria-label="3D model of the Clutch kit"
-          onPointerDown={onPointerDown}
-        >
-          <p className="dims">4.5 × 3 in · about 0.9 in deep</p>
-          <div className="scaler" style={{ transform: `scale(${scale})` }}>
-            <div className="lift">
-              <div className="shadow" />
-              <div className="sway">
-              <div className="rig" style={{ transform: `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)` }}>
-                <div className="face back"><div className="band" /></div>
-                <div className="face side left"><div className="band" /></div>
-                <div className="face side right"><div className="band" /></div>
-                <div className="face bottom" />
-                <div className="items">
-                  {ITEMS.map((it, i) => {
-                    const p = open ? it.o : it.c;
-                    const z = open ? it.z * 1.6 : it.z;
-                    const r = open ? p[2] || 0 : 0;
-                    return (
-                      <button
-                        key={it.id}
-                        type="button"
-                        className={`item ${it.cls}${selKey && keyOf(it) === selKey ? ' sel' : ''}`}
-                        style={{
-                          transitionDelay: open ? `${i * 45}ms` : '0ms',
-                          width: it.w, height: it.h,
-                          transform: `translate3d(${p[0] - it.w / 2}px, ${p[1] - it.h / 2}px, ${z}px) rotateZ(${r}deg)`,
-                        }}
-                        tabIndex={open ? 0 : -1}
-                        aria-label={it.name}
-                        onClick={() => { if (!moved.current) select(it); }}
-                      >
-                        {it.body}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="hinge"><div className="flap" /></div>
-                {/* Front: zipper along the top edge, black band with the name in white. */}
-                <div className="face front">
-                  <div className="zip"><div className="teeth" /><div className="pull" /></div>
-                  <div className="band"><span>CLUTCH</span></div>
-                </div>
-              </div>
+    <div className="clutch-mockup" style={{ '--c': color.value }}>
+      {/* Instructions sit right above the model. */}
+      <ol className="how" aria-label="How to use the model">
+        <li><b>1</b>Click the zipper</li>
+        <li><b>2</b>See what’s inside</li>
+        <li><b>3</b>Esc or ✕ to close</li>
+      </ol>
+
+      <div
+        className={'stage' + (open ? ' open' : '')}
+        onPointerMove={onPointerMove}
+        onPointerLeave={() => setTilt({ x: 0, y: 0 })}
+      >
+        <div className="scene" aria-hidden="true">
+          <div className="sway">
+            <div className="rig" style={{ transform: `rotateX(${rx}deg) rotateY(${ry}deg)` }}>
+              <div className="face back"><div className="band" /></div>
+              <div className="face side left"><div className="band" /></div>
+              <div className="face side right"><div className="band" /></div>
+              <div className="face top" />
+              <div className="face bottom" />
+              <div className="face front">
+                <div className="zip"><div className="teeth" /><div className="pull" /></div>
+                <div className="band"><span>CLUTCH</span></div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="controls">
-          <div className="group">
-            <button className="btn primary" type="button" onClick={() => { touched.current = true; setOpen(!open); }}>
-              {open ? 'Close the kit' : 'Open the kit'}
-            </button>
-            <button className="btn" type="button" onClick={flip}>
-              {flipped ? 'Flip to front' : 'Flip to back'}
-            </button>
-          </div>
-          <div className="group">
-            <span className="lbl">Color</span>
-            {COLORS.map((c) => (
-              <button
-                key={c.value}
-                className="sw"
-                type="button"
-                aria-label={c.name}
-                aria-pressed={color === c}
-                style={{ background: c.value }}
-                onClick={() => setColor(c)}
-                title={c.name}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Flat hit target over the zipper. It sits outside the 3D scene, so clicks always land. */}
+        <button type="button" className="zip-hit" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
+          <span className="zip-cue">Click the zipper</span>
+        </button>
+        <p className="dims" aria-hidden="true">4.5 × 3 in.</p>
       </div>
 
-      <div className="inventory">
-        <ul className="contents" aria-label="Kit contents">
-          {CONTENTS.map((it) => (
-            <li key={keyOf(it)}>
-              <button
-                type="button"
-                aria-pressed={keyOf(it) === selKey}
-                onClick={() => select(it)}
-              >
-                <span className="quantity" aria-hidden={it.count ? undefined : true}>{it.count ?? '+'}</span>
-                {it.name}
-              </button>
-            </li>
+      <div className="bar">
+        <button type="button" className="kit-toggle" aria-haspopup="dialog" onClick={() => setOpen(true)}>Open the kit</button>
+        <div className="colors" role="group" aria-label="Pouch color">
+          {COLORS.map((c) => (
+            <button key={c.key} type="button" className="color" aria-pressed={color.key === c.key} onClick={() => setColor(c)}>
+              <i style={{ background: c.value }} aria-hidden="true" />{c.name}
+            </button>
           ))}
-        </ul>
-        <div className="panel" aria-live="polite">
-          {selected ? (
-            <div key={selKey}>
-              <h3>{selected.name}</h3>
-              <p>
-                {selected.count && <strong>{selected.count} {selected.unit}. </strong>}
-                {selected.text}
-              </p>
-            </div>
-          ) : (
-            <p>Everything packs into a refillable 4.5 × 3 in pouch, in fuchsia or bone.</p>
-          )}
         </div>
       </div>
 
-      <div className="notes">
-        <p>A negative drink test is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
-        <p>Concept model, drawn to scale at 4.5 × 3 in. Packed depth (about 0.9 in) and item sizes are estimates until a sample is packed. The zipper runs along the top of the front. Contents may change after the pilot.</p>
-      </div>
+      <dialog
+        ref={dialogRef}
+        className="kit-overlay"
+        aria-labelledby="kit-overlay-title"
+        onClose={() => setOpen(false)}
+        onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+      >
+        <div className="overlay-panel">
+          <header>
+            <h3 id="kit-overlay-title"><span>What’s inside</span> 9 items + your slot</h3>
+            <button type="button" className="overlay-close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
+          </header>
+          <ul className="contents">
+            {CONTENTS.map((item, i) => (
+              <li key={item.key} className={item.key === 'slot' ? 'is-slot' : undefined} style={{ '--i': i }}>
+                <div className={'art' + (item.art.stack ? ' stack' : '')} aria-hidden="true">
+                  {Array.from({ length: item.art.n }, (_, k) => (
+                    <div key={k} className={`item ${item.art.cls}`} style={{ width: item.art.w, height: item.art.h }}>{item.art.body}</div>
+                  ))}
+                </div>
+                <h4><b>{item.count}</b>{item.name}</h4>
+                <p>{item.text}</p>
+              </li>
+            ))}
+          </ul>
+          <footer>
+            <p>A negative drink test is not a guarantee. If you or a friend feel wrong, get help and call 911. Item sizes are estimates until a sample is packed.</p>
+            <button type="button" className="kit-toggle" onClick={() => setOpen(false)}>Pack it up</button>
+          </footer>
+        </div>
+      </dialog>
     </div>
   );
 }
