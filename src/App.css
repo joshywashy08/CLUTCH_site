@@ -220,6 +220,7 @@ summary span::before { content: '+'; display: inline-block; }
 details[open] summary span { background: var(--block); color: var(--block-text); border-color: var(--block); }
 details[open] summary span::before { transform: rotate(45deg); }
 details p { max-width: 56ch; padding: 0 44px 20px 1px; }
+details p a { color: inherit; font-weight: 700; text-decoration: underline; text-decoration-color: var(--fuchsia); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 /* The empty-slot question leads the list. */
 details:first-child summary { font-size: 1.15rem; }
 

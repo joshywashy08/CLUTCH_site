@@ -10,14 +10,12 @@ import { FEEDBACK, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './c
 
 // Keep every claim here true: no safety promises, no accuracy numbers.
 const questions = [
-  ['What’s the empty space for?', 'Whatever you’d turn around for. Lip gloss, travel perfume, earplugs, a hair tie, a spare key. The space is part of the kit: we leave it empty on purpose so that the pouch is fit for your night.'],
-  ['Why not just grab this stuff myself?', 'You could; but people don’t, and you find out at 1 a.m. We want to make your pregame as easy as possible: Clutch puts all of it in one pouch that lives in your bag, so it’s already there when someone needs it. And buying each thing yourself means a full box of everything. Clutch gives you the amounts a night out needs, for less than buying it all separately.'],
-  ['What’s inside?', 'A drink-spike test, two condoms, two bandages, a vomit bag, two mints, an instruction card and one empty slot for your own item.'],
-  ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
-  ['What colors does it come in?', 'Fuchsia and ivory. Both have the black CLUTCH band.'],
-  ['When and where do I get one?', 'The first batch is for Emory University in spring 2027. Preorders are picked up on campus.'],
-  ['Can my club or chapter get a box?', 'That’s the plan. We’re designing boxes of 25 kits with bonus refills for fraternities, sororities and clubs.'],
-  ['What can the drink tests tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: Valium, Ketamine, Xanax, etc. Full documentation is on the insert card included in the poouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
+  ['What’s inside?', 'A drink test, two condoms, two bandages, a vomit bag, two mints and an instruction card, plus one empty space for whatever you’d turn around for: lip gloss, travel perfume, a hair tie.'],
+  ['Why not just grab this stuff myself?', 'You could, but people don’t, and you find out at 1 a.m. Clutch keeps it all in one pouch in your bag, in the amounts a night needs, for less than buying a full box of everything.'],
+  ['How much is it, and what colors?', `$${PREORDER_PRICE} if you preorder, $${RETAIL_PRICE} at launch, in fuchsia or ivory. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
+  ['When and where do I get one?', 'The first batch is for Emory University in spring 2027, picked up on campus. Boxes of 25 for chapters and clubs are in the works.'],
+  ['What can the drink test tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: GHB, ketamine and benzodiazepines like Valium and Xanax. Full directions are on the card in the pouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
+  ['What’s next?', <>Clutch Pocket: a smaller, vertical pouch for nights when you only have your pockets, in slate or ivory. It’s still a concept. <a href="/pocket/">See the Pocket</a>.</>],
 ]
 
 // One plain sentence for the hero, built from the same list as the "What's inside" section.

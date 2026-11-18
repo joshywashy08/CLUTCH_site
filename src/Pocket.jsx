@@ -62,10 +62,10 @@ export default function Pocket() {
       <main className="pocket-page">
         <section className="shell pocket-hero" aria-labelledby="pocket-title">
           <div className="pocket-copy">
-            <p className="concept-flag">Concept · Not for sale</p>
+            <p className="concept-flag">Concept</p>
             <h1 id="pocket-title"><span className="h1-line">Clutch</span> <span className="h1-band">Pocket.</span></h1>
-            <p className="hero-description">A smaller, vertical Clutch for anyone who goes out with just their pockets. It keeps the black band, drops to the essentials and fits a jeans or jacket pocket.</p>
-            <p className="pocket-note">Everything on this page is tentative. Size, contents and price will change once we have samples.</p>
+            <p className="hero-description">A smaller, vertically-oriented Clutch for anyone who goes out with just their pockets.</p>
+            <p className="pocket-note">Everything on this page is tentative. Size, contents and price may change once we have samples.</p>
           </div>
           <figure className="pocket-figure">
             {/* Clicking the render switches colorway, same as the swatches. */}
@@ -142,7 +142,7 @@ export default function Pocket() {
       <footer className="site-footer">
         <div className="shell footer-layout">
           <a className="wordmark" href="/" aria-label="Clutch home">CLUTCH</a>
-          <p>Pocket is a concept. Nothing here is for sale.</p>
+          <p>Pocket is a concept..</p>
           <a className="text-link" href="/">Back to Clutch <span aria-hidden="true">→</span></a>
         </div>
       </footer>
