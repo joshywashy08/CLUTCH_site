@@ -1,11 +1,15 @@
+/*
+ SLATE || FUCHSIA || IVORY
+ 
+ */
+
 :root {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: light dark;
   color: var(--text);
   background: var(--surface);
   font-synthesis: none;
-  /* Design language: slate, fuchsia, ivory. Black (--ink) is kept for the logo (and the pouch band),
-     so the black box with white CLUTCH stands out everywhere. Dark mode uses slate, not black. */
+  
   --ink: #121318;
   --slate: #2a2b30;
   --ivory: #ede6dc;

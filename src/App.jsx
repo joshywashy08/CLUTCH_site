@@ -13,13 +13,11 @@ const questions = [
   ['What’s the empty space for?', 'Whatever you’d turn around for. Lip gloss, travel perfume, earplugs, a hair tie, a spare key. The space is part of the kit: we leave it empty on purpose so that the pouch is fit for your night.'],
   ['Why not just grab this stuff myself?', 'You could; but people don’t, and you find out at 1 a.m. We want to make your pregame as easy as possible: Clutch puts all of it in one pouch that lives in your bag, so it’s already there when someone needs it.'],
   ['What’s inside?', 'A drink-spike test, two condoms, two bandages, a vomit bag, two mints, an instruction card and one empty slot for your own item.'],
-  ['Why one drink test?', 'One covers a night out, and it keeps the kit at an optimal price. We plan to sell packages containing an initial kit along with refills.'],
-  ['Is it just for me?', 'Half the point is being the friend who has it. The bandage for someone’s heels, the mint before the photo, the bag at the end of the night.'],
   ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches. The pouch is reusable, so restock it from your own drawer and keep carrying it.`],
   ['What colors does it come in?', 'Fuchsia and ivory. Both have the black CLUTCH band.'],
   ['When and where do I get one?', 'The first batch is for Emory University in spring 2027. Preorders are picked up on campus.'],
   ['Can my club or chapter get a box?', 'That’s the plan. We’re designing boxes of 25 kits with bonus refills for fraternities, sororities and clubs.'],
-  ['What can the drink tests tell me?', 'It checks a drop of your drink for three drugs used to spike drinks: GHB, ketamine and benzodiazepines such as Rohypnol or Xanax. It doesn’t check for anything else, and false results are possible. The card in the kit explains how to use it. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
+  ['What can the drink tests tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: Valium, Ketamine, Xanax, etc. Full documentation is on the insert card included in the poouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
 ]
 
 const POUCHES = {
@@ -30,7 +28,7 @@ const POUCHES = {
 // Things that fit the empty slot (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
 const SLOT_IDEAS = ['Lip gloss', 'Travel cologne', 'Earplugs', 'A hair tie', 'Bobby pins', 'A folded $20', 'A spare key']
 
-const BAND = ['The pouch is the point', 'Fits a purse', 'Fuchsia or ivory', 'One slot is yours', `$${PREORDER_PRICE} preorder`]
+const BAND = ['Came in CLUTCH', 'Fits a purse', 'Fuchsia or ivory', 'Space for your stuff', `$${PREORDER_PRICE} preorder`]
 
 function SectionLink({ to, children, ...props }) {
   function navigate(event) {
