@@ -316,7 +316,7 @@ function App() {
           <div className="kit-layout">
             <div className="kit-copy">
               <h2 id="kit-title" tabIndex={-1}>What’s inside.</h2>
-              <p className="kit-hint">Nine essentials and one empty slot, packed in a 4.5 × 3 in. pouch. Click the zipper on the model to see each one and what it’s for.</p>
+              <p className="kit-hint">Nine essentials and one empty slot, packed in a 4.5 × 3 in. pouch. Click the zipper on this CSS-animated model to see each one and what it’s for.</p>
               <ul className="kit-list">
                 {KIT_LIST.map(([n, name]) => <li key={name}><b>{n}</b>{name}</li>)}
               </ul>
