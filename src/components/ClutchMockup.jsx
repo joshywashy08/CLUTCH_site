@@ -10,6 +10,40 @@ const COLORS = [
   { key: 'ivory', name: 'Ivory', value: '#ede6dc' },
 ];
 
+// Pouch shape. A soft vinyl pouch is fattest in the middle and pinched flat at its seams, so the
+// model is a stack of thin layers from back to front, each one a little smaller than the last
+// (like contour lines), instead of the six flat sides of a box. 315 × 210 × 63 px = 4.5 × 3 × 0.9 in.
+const W = 315, HT = 210, HALF = 31.5, STEPS = 14;
+const PINCH = { side: 30, top: 16, bottom: 30 }; // how far the curve runs in from each seam; the zipper keeps the top stiffer
+const BAND_TOP = 82;
+const LAYERS = Array.from({ length: STEPS * 2 + 1 }, (_, i) => {
+  const k = i - STEPS;
+  const a = (Math.abs(k) / STEPS) * (Math.PI / 2);
+  const g = 1 - Math.cos(a); // 0 at the seam, 1 on the front and back panels
+  const seam = k === 0 ? 3 : 0; // the welded seam sticks out a little all round
+  return {
+    k,
+    style: {
+      left: -W / 2 + PINCH.side * g - seam,
+      top: -HT / 2 + PINCH.top * g - seam,
+      width: W - 2 * PINCH.side * g + 2 * seam,
+      height: HT - (PINCH.top + PINCH.bottom) * g + 2 * seam,
+      borderRadius: 10 + 28 * g,
+      transform: `translateZ(${(Math.sign(k) * HALF * Math.sin(a)).toFixed(2)}px)`,
+      '--shade': (0.24 * Math.cos(a) + (k < 0 ? 0.1 : 0) + (k === 0 ? 0.08 : 0)).toFixed(3),
+      '--band-top': `${BAND_TOP - PINCH.top * g + seam}px`,
+    },
+  };
+});
+// Thickness of the pouch at a given distance in from a seam.
+const thick = (edge, pinch) => HALF * (edge >= pinch ? 1 : Math.sqrt(1 - (1 - edge / pinch) ** 2));
+// A few cross-sections fill the pouch in when it is seen close to edge-on, where the layers are only
+// lines. They are drawn only then: left in all the time, they cut hairlines into the front panel.
+const RIBS = [-152, -146, -138, -126, -110, -85, -45, 0, 45, 85, 110, 126, 138, 146, 152].map((x) => {
+  const hz = thick(W / 2 - Math.abs(x), PINCH.side);
+  return { left: -hz, top: -HT / 2, width: hz * 2, height: HT, transform: `translateX(${x}px) rotateY(90deg)`, borderRadius: `${hz}px / ${PINCH.top}px ${PINCH.top}px ${PINCH.bottom}px ${PINCH.bottom}px`, '--band-top': `${BAND_TOP}px` };
+});
+
 const REST = { x: -16, y: -24 };
 const clampX = (v) => Math.max(-70, Math.min(40, v));
 
@@ -72,6 +106,7 @@ export default function ClutchMockup() {
 
   const doOpen = () => { setTouched(true); setOpen(true); };
   const current = CONTENTS.find((c) => c.key === sel);
+  const edgeOn = Math.abs(Math.cos((rot.y * Math.PI) / 180)) < 0.3;
 
   return (
     <div className="clutch-mockup" style={{ '--c': color.value }}>
@@ -87,20 +122,21 @@ export default function ClutchMockup() {
         onKeyDown={onKeyDown}
       >
         <div className="scene">
+          <div className="ground" aria-hidden="true" />
           <div className="sway">
             <div className="rig" style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)` }}>
-              <div className="face back"><div className="band" /></div>
-              <div className="face side left"><div className="band" /></div>
-              <div className="face side right"><div className="band" /></div>
-              <div className="face top" />
-              <div className="face bottom" />
-              <div className="face front">
-                {/* The zipper is a real button on the front face, so it turns with the pouch. */}
-                <button type="button" className="zip" tabIndex={-1} aria-hidden="true" onClick={doOpen}>
-                  <span className="teeth" /><span className="pull" />
-                </button>
-                <div className="band"><span>CLUTCH</span></div>
-              </div>
+              {edgeOn && RIBS.map((style, i) => <div key={'x' + i} className="rib" style={style}><div className="band" /></div>)}
+              {LAYERS.map((l) => (
+                <div key={l.k} className={'layer' + (l.k === 0 ? ' seam' : '') + (l.k === STEPS ? ' front' : '')} style={l.style}>
+                  <div className="band">{l.k === STEPS && <span>CLUTCH</span>}</div>
+                  {/* The zipper is a real button on the front panel, so it turns with the pouch. */}
+                  {l.k === STEPS && (
+                    <button type="button" className="zip" tabIndex={-1} aria-hidden="true" onClick={doOpen}>
+                      <span className="teeth" /><span className="pull" />
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
