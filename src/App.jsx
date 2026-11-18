@@ -228,7 +228,7 @@ function PouchSection() {
     <section className="pouch-section shell" id="pouch" tabIndex={-1} aria-labelledby="pouch-title" data-reveal>
       <div className="pouch-head">
         <p className="eyebrow">The product</p>
-        <h2 id="pouch-title">Come in clutch.</h2>
+        <h2 id="pouch-title">Clutch up.</h2>
         <p>Be the one who has the thing someone needs. The pouch keeps a night’s worth of essentials in one place, stays in your bag after, and gets restocked instead of thrown out.</p>
       </div>
       <div className="pouch-layout">
