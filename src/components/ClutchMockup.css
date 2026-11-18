@@ -67,3 +67,5 @@
 @media (max-width:800px){.clutch-mockup{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:365px) and (max-width:800px){.clutch-mockup .contents{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){.clutch-mockup .lift,.clutch-mockup .rig,.clutch-mockup .flap,.clutch-mockup .pull,.clutch-mockup .item{transition:none}}
+
+.clutch-mockup .dims{position:absolute;left:12px;bottom:12px;white-space:nowrap;z-index:1;margin:0;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:rgba(18,19,24,.7);color:var(--paper);font:600 11px/1.2 'IBM Plex Mono',monospace;letter-spacing:.06em;pointer-events:none}

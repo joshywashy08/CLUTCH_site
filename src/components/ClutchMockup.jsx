@@ -34,8 +34,8 @@ const ITEMS = [
     body: <span>GUM · 5 sticks</span>, name: 'Pack of gum', count: 1, unit: 'pack of 5 sticks', text: 'Fresh breath all night.' },
   { id: 'slot', cls: 'i-slot', w: 196, h: 60, z: 22, c: [60, -64], o: [290, -275, 0],
     body: (<><span>Your item</span><small>empty slot</small></>),
-    name: 'Room for your own thing',
-    text: 'Space left for your own lip gloss, travel cologne or a hair tie.' },
+    name: 'Empty slot for your own item',
+    text: 'The kit leaves one slot empty on purpose. Add your own lip gloss, travel cologne or a hair tie.' },
 ];
 
 const keyOf = (it) => it.pair || it.id;
@@ -55,6 +55,7 @@ export default function ClutchMockup() {
   const drag = useRef(null);
   const moved = useRef(false);
   const rotRef = useRef(rot);
+  const touched = useRef(false);
   useEffect(() => { rotRef.current = rot; }, [rot]);
 
   const setOpen = (v) => {
@@ -65,6 +66,7 @@ export default function ClutchMockup() {
   };
 
   const select = (it) => {
+    touched.current = true;
     if (!open) setOpen(true);
     setSelKey(keyOf(it));
   };
@@ -103,6 +105,20 @@ export default function ClutchMockup() {
     };
   }, []);
 
+  // Open the kit by itself the first time it scrolls into view, unless the visitor already touched it.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      if (!touched.current) setOpen(true);
+    }, { threshold: 0.6 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   // Scale the 880px scene down to fit narrow containers
   useEffect(() => {
     const el = stageRef.current;
@@ -119,6 +135,7 @@ export default function ClutchMockup() {
   }, []);
 
   const onPointerDown = (e) => {
+    touched.current = true;
     drag.current = { x: e.clientX, y: e.clientY, rx: rotRef.current.rx, ry: rotRef.current.ry };
     moved.current = false;
   };
@@ -136,6 +153,7 @@ export default function ClutchMockup() {
           aria-label="3D model of the Clutch kit"
           onPointerDown={onPointerDown}
         >
+          <p className="dims">4.5 × 3 in · about 0.9 in deep</p>
           <div className="scaler" style={{ transform: `scale(${scale})` }}>
             <div className="lift">
               <div className="shadow" />
@@ -171,7 +189,7 @@ export default function ClutchMockup() {
                 <div className="face front">
                   <div className="tape" />
                   <div className="logo">CLUTCH</div>
-                  <div className="band">CLUTCH · ADMIT ONE · CLUTCH · ADMIT ONE</div>
+                  <div className="band">CAME IN CLUTCH · CAME IN CLUTCH</div>
                   <div className="stitch" />
                   <div className="gloss" />
                 </div>
@@ -182,7 +200,7 @@ export default function ClutchMockup() {
 
         <div className="controls">
           <div className="group">
-            <button className="btn primary" type="button" onClick={() => setOpen(!open)}>
+            <button className="btn primary" type="button" onClick={() => { touched.current = true; setOpen(!open); }}>
               {open ? 'Close the kit' : 'Open the kit'}
             </button>
             <button className="btn" type="button" onClick={flip}>
