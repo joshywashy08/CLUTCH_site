@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import bone1200 from './assets/pouch-bone-1200.webp'
-import bone640 from './assets/pouch-bone-640.webp'
+import ivory1200 from './assets/pouch-ivory-1200.webp'
+import ivory640 from './assets/pouch-ivory-640.webp'
 import fuchsia1200 from './assets/pouch-fuchsia-1200.webp'
 import fuchsia640 from './assets/pouch-fuchsia-640.webp'
 import './App.css'
@@ -17,7 +17,7 @@ const questions = [
   ['Why one drink test?', 'One covers a night out, and it keeps the kit at a price students actually pay. We plan to sell extra tests separately for anyone who wants a second.'],
   ['Is it just for me?', 'Half the point is being the friend who has it. The bandage for someone’s heels, the mint before the photo, the bag at the end of the night.'],
   ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches. The pouch is reusable, so restock it from your own drawer and keep carrying it.`],
-  ['What colors does it come in?', 'Fuchsia and bone. Both have the black CLUTCH band.'],
+  ['What colors does it come in?', 'Fuchsia and ivory. Both have the black CLUTCH band.'],
   ['When and where do I get one?', 'The first batch is for Emory University in spring 2027. Preorders are picked up on campus.'],
   ['Can my club or chapter get a box?', 'That’s the plan. We’re designing boxes of 25 kits with bonus refills for fraternities, sororities and clubs.'],
   ['What can the drink tests tell me?', 'We’re still choosing a supplier. The card in the kit explains how to use the test and what it detects. A negative result can miss substances.'],
@@ -25,13 +25,13 @@ const questions = [
 
 const POUCHES = {
   fuchsia: { name: 'Fuchsia', src: fuchsia1200, small: fuchsia640, alt: 'Fuchsia Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
-  bone: { name: 'Bone', src: bone1200, small: bone640, alt: 'Bone Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
+  ivory: { name: 'Ivory', src: ivory1200, small: ivory640, alt: 'Ivory Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
 }
 
 // Things that fit the empty slot (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
 const SLOT_IDEAS = ['Lip gloss', 'Travel cologne', 'Earplugs', 'A hair tie', 'Bobby pins', 'A folded $20', 'A spare key']
 
-const BAND = ['The pouch is the point', 'Fits a purse', 'Fuchsia or bone', 'One slot is yours', `$${PREORDER_PRICE} preorder`]
+const BAND = ['The pouch is the point', 'Fits a purse', 'Fuchsia or ivory', 'One slot is yours', `$${PREORDER_PRICE} preorder`]
 
 function SectionLink({ to, children, ...props }) {
   function navigate(event) {
@@ -139,7 +139,7 @@ function Sticker() {
 
 // The two launch colorways. They float, lean toward the pointer, and swap places when you pick one.
 // Any click on either pouch swaps which one is in front.
-const other = (key) => (key === 'fuchsia' ? 'bone' : 'fuchsia')
+const other = (key) => (key === 'fuchsia' ? 'ivory' : 'fuchsia')
 
 function HeroPouches() {
   const [front, setFront] = useState('fuchsia')
@@ -222,7 +222,7 @@ const FEATURES = [
   { n: '1', title: 'The band', text: 'One black band all the way around, with CLUTCH in white. It’s the logo, and it’s what people notice first.', x: 50, y: 45 },
   { n: '2', title: 'The zipper', text: 'Runs along the top of the front, so nothing falls out until you open it.', x: 62, y: 21 },
   { n: '3', title: 'The size', text: '4.5 × 3 in. and about 0.9 in. thick packed. It fits a small purse or a clutch.', x: 84, y: 43 },
-  { n: '4', title: 'It stays', text: 'Reusable vinyl in fuchsia or bone. Restock it from your own drawer and keep carrying it.', x: 25, y: 66 },
+  { n: '4', title: 'It stays', text: 'Reusable vinyl in fuchsia or ivory. Restock it from your own drawer and keep carrying it.', x: 25, y: 66 },
 ]
 
 function PouchSection() {

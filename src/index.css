@@ -4,18 +4,20 @@
   color: var(--text);
   background: var(--surface);
   font-synthesis: none;
-  /* Brand: fuchsia, bone, black. Launch colorways are fuchsia and bone. */
+  /* Design language: slate, fuchsia, ivory. Black (--ink) is kept for the logo (and the pouch band),
+     so the black box with white CLUTCH stands out everywhere. Dark mode uses slate, not black. */
   --ink: #121318;
-  --bone: #ede6dc;
+  --slate: #2a2b30;
+  --ivory: #ede6dc;
   --fuchsia: #d9327e;
-  --text: light-dark(var(--ink), var(--bone));
-  --muted: light-dark(#4d4b48, #b3ada4);
-  --surface: light-dark(var(--bone), #16171c);
-  --panel: light-dark(#e3dace, #1f2027);
-  --line: light-dark(#cfc5b6, #3a3b44);
-  /* The logo: a black band with white lettering. Inverts on the dark theme so it stays visible. */
-  --block: light-dark(var(--ink), var(--bone));
-  --block-text: light-dark(#fff, var(--ink));
+  --text: light-dark(var(--ink), var(--ivory));
+  --muted: light-dark(#4d4b48, #c2bcb3);
+  --surface: light-dark(var(--ivory), var(--slate));
+  --panel: light-dark(#e3dace, #35363c);
+  --line: light-dark(#cfc5b6, #4a4b52);
+  /* Solid blocks (bands, buttons, cards): slate on the light theme, ivory on the dark one. */
+  --block: light-dark(var(--slate), var(--ivory));
+  --block-text: light-dark(var(--ivory), var(--slate));
   --accent: light-dark(#b81f66, #f0609e);
   --display: 'Space Grotesk', system-ui, sans-serif;
   --ease: cubic-bezier(.2, .8, .2, 1);

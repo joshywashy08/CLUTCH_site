@@ -6,7 +6,7 @@ import './ClutchMockup.css';
 
 const COLORS = [
   { key: 'fuchsia', name: 'Fuchsia', value: '#d9327e' },
-  { key: 'bone', name: 'Bone', value: '#ede6dc' },
+  { key: 'ivory', name: 'Ivory', value: '#ede6dc' },
 ];
 
 // What each item is for. Keep it true: no safety promises, no accuracy numbers.

@@ -21,7 +21,7 @@ main { overflow-x: clip; }
 .nav-layout { min-height: 68px; }
 
 /* The logo is always black with white lettering. On the dark theme a hairline keeps the rectangle visible. */
-.wordmark { display: inline-block; padding: 9px 12px 9px 17px; background: var(--ink); color: #fff; box-shadow: 0 0 0 1px light-dark(transparent, #4a4b55); font: 700 1.05rem/1 var(--display); letter-spacing: .32em; }
+.wordmark { display: inline-block; padding: 9px 12px 9px 17px; background: var(--ink); color: #fff; font: 700 1.05rem/1 var(--display); letter-spacing: .32em; }
 
 nav { display: flex; align-items: center; gap: clamp(14px, 2.6vw, 32px); font: 700 .86rem/1 var(--display); letter-spacing: .1em; text-transform: uppercase; }
 nav a:hover, .text-link:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
@@ -52,7 +52,7 @@ nav .nav-buy:hover { text-decoration: none; background: var(--fuchsia); color: #
 h1, h2 { font-family: var(--display); font-weight: 700; text-transform: uppercase; letter-spacing: -.04em; line-height: .86; }
 h1 { font-size: clamp(3.6rem, 8.4vw, 8rem); margin-block: 20px 26px; }
 .h1-line { display: block; }
-.h1-band { display: inline-block; margin-top: .05em; padding: .1em .16em .04em .12em; background: var(--ink); color: #fff; box-shadow: 0 0 0 1px light-dark(transparent, #4a4b55); letter-spacing: .01em; }
+.h1-band { display: inline-block; margin-top: .05em; padding: .1em .16em .04em .12em; background: var(--ink); color: #fff; letter-spacing: .01em; }
 h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 
 .text-link { font: 700 .86rem/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
@@ -100,15 +100,15 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 .pouch-hit { position: absolute; inset: 15% 18.5% 28.5% 18.5%; border-radius: 9%; pointer-events: auto; cursor: pointer; }
 .pouch-float:focus-visible { outline: 3px solid var(--accent); outline-offset: -6px; }
 .pouch-fuchsia { left: 0; bottom: 0; --tilt: -5deg; }
-.pouch-bone { right: 0; top: 0; --tilt: 6deg; }
+.pouch-ivory { right: 0; top: 0; --tilt: 6deg; }
 .pouch { z-index: 1; transform: translate(calc(var(--px) * -6px), calc(var(--py) * -6px)) rotate(var(--tilt, 0deg)) scale(.92); filter: saturate(.9) brightness(.97); }
 .pouch.is-front { z-index: 2; transform: translate(calc(var(--px) * 12px), calc(var(--py) * 12px)) rotate(var(--tilt, 0deg)); filter: none; }
 
 .sticker { position: absolute; left: 3%; top: 4%; z-index: 3; width: clamp(96px, 11.5vw, 148px); aspect-ratio: 1; display: grid; place-items: center; }
 .sticker svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.sticker-disc { fill: var(--ink); stroke: var(--bone); stroke-width: 2; }
+.sticker-disc { fill: var(--block); stroke: var(--surface); stroke-width: 2; }
 .sticker-ring { transform-box: view-box; transform-origin: 100px 100px; }
-.sticker text { fill: var(--bone); font: 700 15px var(--display); letter-spacing: .12em; }
+.sticker text { fill: var(--block-text); font: 700 15px var(--display); letter-spacing: .12em; }
 .sticker strong { position: relative; color: var(--fuchsia); font: 700 clamp(1.6rem, 2.9vw, 2.6rem)/1 var(--display); letter-spacing: -.03em; }
 
 .hero-figure figcaption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; margin-top: 8px; }
@@ -116,12 +116,12 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 .swatch { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 14px 0 10px; border: 2px solid var(--text); background: transparent; color: var(--text); font: 700 .8rem/1 var(--display); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 .swatch i { width: 18px; height: 18px; border: 2px solid var(--text); }
 .swatch-fuchsia i { background: var(--fuchsia); }
-.swatch-bone i { background: var(--bone); }
+.swatch-ivory i { background: var(--ivory); }
 .swatch[aria-pressed='true'] { background: var(--block); color: var(--block-text); }
 .caption-note { font-size: .78rem; color: var(--muted); }
 
 /* Signature: the pouch band, wrapped across the page at a slight angle. */
-.wristband { position: relative; z-index: 1; width: 104%; margin: clamp(16px, 2vw, 28px) 0 0 -2%; transform: rotate(-1.4deg); overflow: hidden; padding: 17px 0; background: var(--ink); color: #fff; border-block: 2px solid light-dark(var(--ink), var(--line)); font: 700 clamp(1rem, 1.7vw, 1.4rem)/1 var(--display); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+.wristband { position: relative; z-index: 1; width: 104%; margin: clamp(16px, 2vw, 28px) 0 0 -2%; transform: rotate(-1.4deg); overflow: hidden; padding: 17px 0; background: var(--block); color: var(--block-text); border-block: 2px solid light-dark(var(--ink), var(--line)); font: 700 clamp(1rem, 1.7vw, 1.4rem)/1 var(--display); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
 .wristband-track { display: flex; width: max-content; }
 .wristband p { display: flex; }
 .wristband span { display: inline-flex; align-items: center; padding-left: clamp(22px, 3.4vw, 46px); }
@@ -130,7 +130,7 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 /* Key facts */
 .facts { display: grid; grid-template-columns: repeat(4, 1fr); list-style: none; margin-block: clamp(28px, 3.5vw, 48px) 0; padding: 0; border: 2px solid var(--text); }
 .facts li { display: grid; align-content: start; gap: 8px; padding: 18px 20px 22px; border-left: 2px solid var(--text); }
-.facts li:first-child { border-left: 0; background: var(--ink); color: #fff; }
+.facts li:first-child { border-left: 0; background: var(--block); color: var(--block-text); }
 .facts li:first-child strong { color: var(--fuchsia); }
 .facts span { font: 700 .74rem/1 var(--display); letter-spacing: .14em; text-transform: uppercase; }
 .facts strong { font: 700 clamp(1.9rem, 3.4vw, 2.9rem)/.95 var(--display); letter-spacing: -.03em; }
@@ -150,13 +150,13 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 /* The empty slot: a fuchsia band across the page */
 .slot-section { margin-top: clamp(36px, 4.5vw, 64px); background: var(--fuchsia); color: #fff; border-block: 2px solid var(--text); }
 .slot-layout { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding-block: clamp(32px, 4.5vw, 60px); }
-.slot-copy .eyebrow { padding: 8px 10px; background: var(--ink); color: #fff; }
+.slot-copy .eyebrow { padding: 8px 10px; background: var(--slate); color: var(--ivory); }
 .slot-copy .eyebrow::before { background: #fff; }
 .slot-copy h2 { margin-block: 18px 20px; }
 /* 600 weight at this size counts as large text, so white on fuchsia passes contrast. */
 .slot-copy p:last-child { max-width: 34ch; font-size: clamp(1.2rem, 1.6vw, 1.35rem); font-weight: 700; line-height: 1.4; }
 .slot-box { position: relative; display: grid; place-items: center; min-height: clamp(200px, 22vw, 280px); padding: 48px 24px 28px; border: 4px dashed #fff; }
-.slot-tag { position: absolute; left: -4px; top: -4px; padding: 8px 12px; background: var(--ink); color: #fff; font: 700 .78rem/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
+.slot-tag { position: absolute; left: -4px; top: -4px; padding: 8px 12px; background: var(--slate); color: var(--ivory); font: 700 .78rem/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
 .slot-word { font: 700 clamp(2.1rem, 4.6vw, 3.8rem)/1 var(--display); letter-spacing: -.03em; text-transform: uppercase; text-align: center; }
 .slot-word span { display: inline-block; }
 
@@ -171,12 +171,12 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 
 /* Preorder: the black band, big */
 .preorder { padding-top: clamp(36px, 4.5vw, 64px); }
-.preorder-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 28px 40px; padding: clamp(28px, 4.6vw, 60px); background: var(--ink); color: #fff; border: 2px solid light-dark(var(--ink), var(--line)); }
+.preorder-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 28px 40px; padding: clamp(28px, 4.6vw, 60px); background: var(--block); color: var(--block-text); border: 2px solid light-dark(var(--ink), var(--line)); }
 .preorder-card h2 { margin-block: 16px 16px; font-size: clamp(3rem, 7vw, 6.2rem); }
 .preorder-card h2 span { color: var(--fuchsia); }
 .preorder-card p:last-child { max-width: 40ch; font-size: 1.05rem; }
-.preorder-card .button { border-color: #fff; }
-.preorder-card .button-buy { box-shadow: 5px 5px 0 #fff; }
+.preorder-card .button { border-color: var(--block-text); }
+.preorder-card .button-buy { box-shadow: 5px 5px 0 var(--block-text); }
 .preorder-card .button-buy.is-soon { box-shadow: none; }
 
 /* FAQ */
@@ -196,8 +196,7 @@ details p { max-width: 56ch; padding: 0 44px 20px 1px; }
 details:first-child summary { font-size: 1.15rem; }
 
 /* Footer */
-.site-footer { background: var(--ink); color: #fff; }
-.site-footer .wordmark { box-shadow: 0 0 0 1px rgba(255, 255, 255, .45); }
+.site-footer { background: var(--block); color: var(--block-text); }
 .footer-layout { min-height: 96px; flex-wrap: wrap; padding-block: 22px; }
 .site-footer p { font-size: .9rem; opacity: .8; }
 
@@ -211,10 +210,10 @@ details:first-child summary { font-size: 1.15rem; }
   .hero-copy > :nth-child(4) { animation-delay: .24s; }
   .hero-copy > :nth-child(5) { animation-delay: .32s; }
   .h1-band { animation: band-wipe .7s .35s var(--ease) both; }
-  .pouch-bone { animation: drop-in .9s .1s var(--ease) both; }
+  .pouch-ivory { animation: drop-in .9s .1s var(--ease) both; }
   .pouch-fuchsia { animation: drop-in .9s .25s var(--ease) both; }
   .pouch-float { animation: float 7s ease-in-out infinite; }
-  .pouch-bone .pouch-float { animation-duration: 8.5s; animation-delay: -3s; }
+  .pouch-ivory .pouch-float { animation-duration: 8.5s; animation-delay: -3s; }
   .sticker { animation: pop .6s .7s var(--ease) both; }
   .sticker-ring { animation: spin 22s linear infinite; }
   .hero-figure figcaption { animation: rise .7s .5s var(--ease) both; }
@@ -227,7 +226,7 @@ details:first-child summary { font-size: 1.15rem; }
   .reveal-on .facts li:nth-child(4) { transition-delay: .24s; }
   .button-buy, .nav-buy, .swatch, .theme-toggle { transition: transform .18s var(--ease), box-shadow .18s var(--ease), background-color .18s ease, color .18s ease; }
   a.button-buy:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--text); }
-  .preorder-card a.button-buy:hover { box-shadow: 8px 8px 0 #fff; }
+  .preorder-card a.button-buy:hover { box-shadow: 8px 8px 0 var(--block-text); }
   a.button-buy span { display: inline-block; transition: transform .2s var(--ease); }
   a.button-buy:hover span { transform: translateX(4px); }
   .text-link span { transition: transform .2s var(--ease); }
@@ -294,7 +293,7 @@ details:first-child summary { font-size: 1.15rem; }
 .pouch-diagram { position: relative; border: 2px solid var(--text); background: #ede6dc; }
 .pouch-diagram img { width: 100%; height: auto; }
 .marker { position: absolute; display: grid; place-items: center; width: clamp(30px, 3vw, 40px); height: clamp(30px, 3vw, 40px); translate: -50% -50%; border: 2px solid #fff; border-radius: 50%; background: var(--fuchsia); color: #fff; font: 700 clamp(.85rem, 1.2vw, 1.05rem)/1 var(--display); box-shadow: 0 0 0 2px var(--ink); transition: scale .25s var(--ease), background-color .2s ease, opacity .2s ease; }
-.marker.is-active { scale: 1.3; background: var(--ink); }
+.marker.is-active { scale: 1.3; background: var(--slate); }
 .pouch-diagram.has-active .marker:not(.is-active) { opacity: .45; }
 /* Dimension lines, drawn to the pouch in the render */
 .dim { position: absolute; display: grid; place-items: center; color: var(--ink); font: 700 clamp(.66rem, 1vw, .82rem)/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }

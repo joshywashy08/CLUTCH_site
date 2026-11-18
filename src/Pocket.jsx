@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import bone800 from './assets/pocket-bone-800.webp'
-import charcoal800 from './assets/pocket-charcoal-800.webp'
+import ivory800 from './assets/pocket-ivory-800.webp'
+import slate800 from './assets/pocket-slate-800.webp'
 import sizes1400 from './assets/sizes-1400.webp'
 import sizes800 from './assets/sizes-800.webp'
 import './App.css'
@@ -10,8 +10,8 @@ import './Pocket.css'
 // Every detail here is tentative. Keep it that way in the copy until samples and pricing are decided.
 
 const COLORS = {
-  charcoal: { name: 'Charcoal', src: charcoal800 },
-  bone: { name: 'Bone', src: bone800 },
+  slate: { name: 'Slate', src: slate800 },
+  ivory: { name: 'Ivory', src: ivory800 },
 }
 
 const ELEMENTS = [
@@ -27,7 +27,7 @@ const SPECS = [
   ['Orientation', 'Vertical'],
   ['Zipper', 'Down the right side of the front'],
   ['Band', 'One black band across the pouch, CLUTCH in white'],
-  ['Colors', 'Charcoal or bone'],
+  ['Colors', 'Slate or ivory'],
   ['Material', 'Matte vinyl'],
   ['Fits', 'A jeans or jacket pocket'],
   ['Price', 'Around $10 (not set)'],
@@ -39,14 +39,14 @@ const COMPARE = [
   ['Shape', 'Horizontal', 'Vertical'],
   ['Zipper', 'Top of the front', 'Right side of the front'],
   ['Inside', '9 items + your slot', '6 items'],
-  ['Colors', 'Fuchsia or bone', 'Charcoal or bone'],
+  ['Colors', 'Fuchsia or ivory', 'Slate or ivory'],
   ['Vomit bag', 'Yes', 'No: there isn’t room'],
   ['Price', '$12 preorder, $15 at launch', 'Around $10, not set'],
 ]
 
 export default function Pocket() {
-  const [color, setColor] = useState('charcoal')
-  const other = color === 'charcoal' ? 'bone' : 'charcoal'
+  const [color, setColor] = useState('slate')
+  const other = color === 'slate' ? 'ivory' : 'slate'
 
   return (
     <>
@@ -116,7 +116,7 @@ export default function Pocket() {
         <section className="shell pocket-section" aria-labelledby="scale-title">
           <h2 id="scale-title">Next to the Clutch.</h2>
           <figure className="scale-figure">
-            <img src={sizes1400} srcSet={`${sizes800} 800w, ${sizes1400} 1400w`} sizes="(max-width: 900px) 92vw, 1180px" alt="The horizontal fuchsia Clutch pouch next to the smaller vertical charcoal Pocket pouch, shown at the same scale." width="1400" height="700" loading="lazy" />
+            <img src={sizes1400} srcSet={`${sizes800} 800w, ${sizes1400} 1400w`} sizes="(max-width: 900px) 92vw, 1180px" alt="The horizontal fuchsia Clutch pouch next to the smaller vertical slate Pocket pouch, shown at the same scale." width="1400" height="700" loading="lazy" />
             <figcaption>Concept renders at the same scale.</figcaption>
           </figure>
           <div className="compare-wrap">
