@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import './ClutchMockup.css';
 
 const COLORS = [
-  { name: 'Fuchsia pink', hex: '#D9327E' },
-  { name: 'Lemon yellow', hex: '#F2D12E' },
+  { name: 'Fuchsia', value: '#d9327e' },
+  { name: 'Bone', value: '#ede6dc' },
 ];
 
 // Scale: 70px = 1 inch (pouch face 315 × 210 = 4.5 × 3 in, packed depth 63 = 0.9 in).
@@ -46,10 +46,11 @@ export default function ClutchMockup() {
   const [open, setOpenState] = useState(false);
   const [rot, setRot] = useState({ rx: -16, ry: -30 });
   const [selKey, setSelKey] = useState(null);
-  const [color, setColor] = useState(COLORS[0].hex);
+  const [color, setColor] = useState(COLORS[0]);
   const [flipped, setFlipped] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [scale, setScale] = useState(1);
+  const [idle, setIdle] = useState(true); // gentle sway until the visitor touches the model
 
   const stageRef = useRef(null);
   const drag = useRef(null);
@@ -67,6 +68,7 @@ export default function ClutchMockup() {
 
   const select = (it) => {
     touched.current = true;
+    setIdle(false);
     if (!open) setOpen(true);
     setSelKey(keyOf(it));
   };
@@ -136,6 +138,7 @@ export default function ClutchMockup() {
 
   const onPointerDown = (e) => {
     touched.current = true;
+    setIdle(false);
     drag.current = { x: e.clientX, y: e.clientY, rx: rotRef.current.rx, ry: rotRef.current.ry };
     moved.current = false;
   };
@@ -143,11 +146,11 @@ export default function ClutchMockup() {
   const selected = ITEMS.find((it) => keyOf(it) === selKey);
 
   return (
-    <div className="clutch-mockup" id="model" style={{ '--c': color }}>
+    <div className="clutch-mockup" id="model" style={{ '--c': color.value }}>
       <div className="viewer">
         <div
           ref={stageRef}
-          className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '')}
+          className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '') + (idle ? ' idle' : '')}
           style={{ height: Math.round(680 * scale) }}
           role="group"
           aria-label="3D model of the Clutch kit"
@@ -157,13 +160,14 @@ export default function ClutchMockup() {
           <div className="scaler" style={{ transform: `scale(${scale})` }}>
             <div className="lift">
               <div className="shadow" />
+              <div className="sway">
               <div className="rig" style={{ transform: `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)` }}>
-                <div className="face back"><div className="tape" /><div className="tagline">came in clutch.</div><div className="band plain" /><div className="stitch" /></div>
-                <div className="face side left"><div className="band plain" /></div>
-                <div className="face side right"><div className="band plain" /></div>
+                <div className="face back"><div className="band" /></div>
+                <div className="face side left"><div className="band" /></div>
+                <div className="face side right"><div className="band" /></div>
                 <div className="face bottom" />
                 <div className="items">
-                  {ITEMS.map((it) => {
+                  {ITEMS.map((it, i) => {
                     const p = open ? it.o : it.c;
                     const z = open ? it.z * 1.6 : it.z;
                     const r = open ? p[2] || 0 : 0;
@@ -173,6 +177,7 @@ export default function ClutchMockup() {
                         type="button"
                         className={`item ${it.cls}${selKey && keyOf(it) === selKey ? ' sel' : ''}`}
                         style={{
+                          transitionDelay: open ? `${i * 45}ms` : '0ms',
                           width: it.w, height: it.h,
                           transform: `translate3d(${p[0] - it.w / 2}px, ${p[1] - it.h / 2}px, ${z}px) rotateZ(${r}deg)`,
                         }}
@@ -185,14 +190,13 @@ export default function ClutchMockup() {
                     );
                   })}
                 </div>
-                <div className="hinge"><div className="flap"><div className="teeth" /><div className="pull"><i /></div></div></div>
+                <div className="hinge"><div className="flap" /></div>
+                {/* Front: zipper along the top edge, black band with the name in white. */}
                 <div className="face front">
-                  <div className="tape" />
-                  <div className="logo">CLUTCH</div>
-                  <div className="band">CAME IN CLUTCH · CAME IN CLUTCH</div>
-                  <div className="stitch" />
-                  <div className="gloss" />
+                  <div className="zip"><div className="teeth" /><div className="pull" /></div>
+                  <div className="band"><span>CLUTCH</span></div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -211,13 +215,14 @@ export default function ClutchMockup() {
             <span className="lbl">Color</span>
             {COLORS.map((c) => (
               <button
-                key={c.hex}
+                key={c.value}
                 className="sw"
                 type="button"
                 aria-label={c.name}
-                aria-pressed={color === c.hex}
-                style={{ background: c.hex }}
-                onClick={() => setColor(c.hex)}
+                aria-pressed={color === c}
+                style={{ background: c.value }}
+                onClick={() => setColor(c)}
+                title={c.name}
               />
             ))}
           </div>
@@ -241,22 +246,22 @@ export default function ClutchMockup() {
         </ul>
         <div className="panel" aria-live="polite">
           {selected ? (
-            <>
+            <div key={selKey}>
               <h3>{selected.name}</h3>
               <p>
                 {selected.count && <strong>{selected.count} {selected.unit}. </strong>}
                 {selected.text}
               </p>
-            </>
+            </div>
           ) : (
-            <p>Everything packs into a refillable 4.5 × 3 in pouch.</p>
+            <p>Everything packs into a refillable 4.5 × 3 in pouch, in fuchsia or bone.</p>
           )}
         </div>
       </div>
 
       <div className="notes">
         <p>A negative drink test is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
-        <p>Concept model, drawn to scale at 4.5 × 3 in. Packed depth (about 0.9 in) and item sizes are estimates until a sample is packed. Contents and colors may change after the pilot.</p>
+        <p>Concept model, drawn to scale at 4.5 × 3 in. Packed depth (about 0.9 in) and item sizes are estimates until a sample is packed. The zipper runs along the top of the front. Contents may change after the pilot.</p>
       </div>
     </div>
   );
