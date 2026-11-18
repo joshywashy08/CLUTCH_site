@@ -4,19 +4,19 @@
   color: var(--text);
   background: var(--surface);
   font-synthesis: none;
+  /* Brand: fuchsia, lemon, black */
   --ink: #191718;
   --paper: #fcf8ef;
   --pink: #ff4ca4;
-  --lime: #dcf755;
+  --fuchsia: #d9327e;
+  --lemon: #f2d12e;
   --text: light-dark(var(--ink), var(--paper));
   --surface: light-dark(var(--paper), #1b171d);
   --accent: light-dark(#cb005f, #ff78b8);
   --edge: light-dark(var(--ink), #857583);
   --line: light-dark(#c9c2b6, #534751);
-  --color-surface: light-dark(#eee2ff, #2c2133);
-  --strip-surface: light-dark(var(--lime), #252917);
-  --strip-text: light-dark(var(--ink), var(--lime));
   --display: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 :root[data-theme='light'] { color-scheme: light; }
@@ -37,17 +37,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 
 h1, h2, h3, p, figure { margin: 0; }
 img { display: block; max-width: 100%; }
-section[id] { scroll-margin-top: 28px; }
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
+section[id] { scroll-margin-top: 20px; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

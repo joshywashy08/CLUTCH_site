@@ -7,41 +7,39 @@ const COLORS = [
   { name: 'Lemon yellow', hex: '#F2D12E' },
 ];
 
-// c = position when closed [x, y]; o = position when open [x, y, rotateZ]
+// Scale: 70px = 1 inch (pouch face 315 × 210 = 4.5 × 3 in, packed depth 63 = 0.9 in).
+// c = position packed inside the pouch [x, y]; o = position laid out when open [x, y, rotateZ].
+// The open layout is a flat lay: insert card centered, protection on the left, extras on the right.
 const ITEMS = [
-  { id: 'card', cls: 'i-card', w: 245, h: 140, z: -24, c: [0, 8], o: [-255, -385, -6],
-    body: (<><b>CLUTCH</b><span>How to use your test</span><small>Who to call · what to watch for</small></>),
+  { id: 'card', cls: 'i-card', w: 245, h: 140, z: -24, c: [0, 8], o: [0, -400, 0],
+    body: (<><b>CLUTCH</b><span>Read before you go out</span><small>How to test · who to call</small></>),
     name: 'Instruction card', count: 1, unit: 'card',
-    text: 'Shows how to use the drink test, the signs that someone may have been drugged, and who to call. It also says plainly that a negative test is not a guarantee.' },
-  { id: 'bag', cls: 'i-bag', w: 266, h: 77, z: -17, c: [0, 52], o: [285, -390, 6],
-    body: (<><span>Vomit bag</span><small>folded flat</small></>),
-    name: 'Vomit bag', count: 1, unit: 'bag, folded flat',
-    text: 'For the friend who needs it. Saves an Uber, a dorm room or a formal dress.' },
-  { id: 'electro', cls: 'i-electro', w: 224, h: 98, z: -10, c: [0, -34], o: [20, -400, 2],
-    body: (<><span>ELECTROLYTE MIX</span><small>1 stick · folds in half to fit</small></>),
-    name: 'Electrolyte stick', count: 1, unit: 'stick',
-    text: 'A sodium-and-glucose drink mix, the same idea as medical oral rehydration solution. Mix it with water as the packet directs, before bed or the morning after. It helps you rehydrate. We make no hangover claims.' },
-  { id: 'condom1', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -3, c: [-78, 22], o: [-335, -215, -8],
+    text: 'How to use the drink test, the signs someone may have been drugged, and who to call. It says plainly that a negative test is not a guarantee.' },
+  { id: 'condom1', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -12, c: [-78, 18], o: [-368, -400, 0],
     body: <span>Condom</span>, name: 'Condoms', count: 2, unit: 'condoms', text: 'Individually wrapped.' },
-  { id: 'condom2', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: 4, c: [78, 22], o: [-180, -225, 5],
+  { id: 'condom2', pair: 'condom', cls: 'i-condom', w: 140, h: 140, z: -6, c: [78, 18], o: [-218, -400, 0],
     body: <span>Condom</span>, name: 'Condoms' },
-  { id: 'test1', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 11, c: [-52, -44], o: [25, -270, -3],
+  { id: 'test1', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 4, c: [-52, -42], o: [-293, -285, 0],
     body: (<><span>DRINK TEST</span><small>single use</small></>),
     name: 'Drink-spike tests', count: 2, unit: 'tests',
     text: 'Check a drink if something feels off. Two per kit, so there is one for a refill or a friend. A negative result is not a guarantee.' },
-  { id: 'test2', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 17, c: [52, 44], o: [40, -190, 3],
+  { id: 'test2', pair: 'test', cls: 'i-test', w: 182, h: 66, z: 10, c: [52, 42], o: [-293, -208, 0],
     body: (<><span>DRINK TEST</span><small>single use</small></>),
     name: 'Drink-spike tests' },
-  { id: 'gum', cls: 'i-gum', w: 196, h: 56, z: 23, c: [0, 0], o: [285, -250, 5],
+  { id: 'bag', cls: 'i-bag', w: 266, h: 77, z: -18, c: [0, 52], o: [290, -430, 0],
+    body: (<><span>Vomit bag</span><small>folded flat</small></>),
+    name: 'Vomit bag', count: 1, unit: 'bag, folded flat',
+    text: 'For the friend who needs it. Saves an Uber, a dorm room or a formal dress.' },
+  { id: 'gum', cls: 'i-gum', w: 196, h: 56, z: 16, c: [0, 0], o: [290, -352, 0],
     body: <span>GUM · 5 sticks</span>, name: 'Pack of gum', count: 1, unit: 'pack of 5 sticks', text: 'Fresh breath all night.' },
-  { id: 'slot', cls: 'i-slot', w: 160, h: 60, z: 27, c: [60, -70], o: [290, -160, -4],
+  { id: 'slot', cls: 'i-slot', w: 196, h: 60, z: 22, c: [60, -64], o: [290, -275, 0],
     body: (<><span>Your item</span><small>empty slot</small></>),
     name: 'Room for your own thing',
     text: 'Space left for your own lip gloss, travel cologne or a hair tie.' },
 ];
 
 const keyOf = (it) => it.pair || it.id;
-const CONTENTS = ['test', 'condom', 'bag', 'electro', 'gum', 'card', 'slot']
+const CONTENTS = ['test', 'condom', 'bag', 'gum', 'card', 'slot']
   .map((key) => ITEMS.find((it) => keyOf(it) === key));
 
 export default function ClutchMockup() {
@@ -142,7 +140,7 @@ export default function ClutchMockup() {
             <div className="lift">
               <div className="shadow" />
               <div className="rig" style={{ transform: `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)` }}>
-                <div className="face back"><div className="edge" /><div className="tagline">came in clutch.</div><div className="band plain" /></div>
+                <div className="face back"><div className="tape" /><div className="tagline">came in clutch.</div><div className="band plain" /><div className="stitch" /></div>
                 <div className="face side left"><div className="band plain" /></div>
                 <div className="face side right"><div className="band plain" /></div>
                 <div className="face bottom" />
@@ -169,12 +167,13 @@ export default function ClutchMockup() {
                     );
                   })}
                 </div>
-                <div className="hinge"><div className="flap"><div className="teeth" /><div className="pull" /></div></div>
+                <div className="hinge"><div className="flap"><div className="teeth" /><div className="pull"><i /></div></div></div>
                 <div className="face front">
-                  <div className="edge" />
+                  <div className="tape" />
                   <div className="logo">CLUTCH</div>
                   <div className="band">CLUTCH · ADMIT ONE · CLUTCH · ADMIT ONE</div>
                   <div className="stitch" />
+                  <div className="gloss" />
                 </div>
               </div>
             </div>
@@ -238,9 +237,8 @@ export default function ClutchMockup() {
       </div>
 
       <div className="notes">
-        <p>The pouch is 4.5 × 3 in. Its packed depth of about 0.9 in and the item sizes are estimates until a physical sample is packed.</p>
-        <p>A drink test helps you check a drink. A negative result is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
-        <p>Concept mockup. Contents, colors and price may change after the pilot.</p>
+        <p>A negative drink test is not a guarantee. If you or a friend feel wrong, get help and call 911.</p>
+        <p>Concept model, drawn to scale at 4.5 × 3 in. Packed depth (about 0.9 in) and item sizes are estimates until a sample is packed. Contents and colors may change after the pilot.</p>
       </div>
     </div>
   );

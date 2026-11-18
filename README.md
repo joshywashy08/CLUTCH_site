@@ -1,9 +1,10 @@
 # CLUTCH Website
 
-This project contains a React website intended for CLUTCH, a $20 dollar kit for going out.
+React (Vite) site for CLUTCH, a going-out kit. $12 preorder, $15 retail.
 
-[cameinclutch.com](https://cameinclutch.com)
+[cameinclutch.com](https://cameinclutch.com) · runs on Cloudflare Workers.
 
-Runs on cloudflare. 
+## Before preorders go live
 
-Need to integrate Shop/Shopify or any more optimal payment system.
+- **Stripe:** paste the Stripe Payment Link into `STRIPE_PREORDER_URL` in `src/config.js`. Until then every Preorder button reads "Preorders open soon".
+- **Prices** live in `src/config.js` and in the meta tags in `index.html`. Change both together.

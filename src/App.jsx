@@ -1,27 +1,43 @@
 import { useEffect, useState } from 'react'
-import colorPouches from './assets/clutch-colors.jpg'
+import colors1350 from './assets/clutch-colors-1350.webp'
+import colors800 from './assets/clutch-colors-800.webp'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
+import { PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
 
 const questions = [
-  ['When can I get one?', 'We’re planning a spring 2027 pilot at Emory’s Oxford College. The target price is $20, and pre-orders are still in the works.'],
-  ['Can my club or chapter get a box?', 'The pilot is designed for Oxford students and clubs. We’re also planning boxes of 25 kits with bonus refills for fraternities and sororities.'],
-  ['What can the drink tests tell me?', 'We’re still choosing a supplier. The included card will explain how to use the selected test and what it can detect. A negative result can miss substances.'],
+  ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches.`],
+  ['When and where do I get one?', 'The first batch is for Emory’s Oxford College in spring 2027. Preorders are picked up on campus.'],
+  ['Can my club or chapter get a box?', 'That’s the plan. We’re designing boxes of 25 kits with bonus refills for fraternities, sororities and clubs.'],
+  ['What can the drink tests tell me?', 'We’re still choosing a supplier. The card in the kit explains how to use the test and what it detects. A negative result can miss substances.'],
 ]
 
 function SectionLink({ to, children, ...props }) {
   function navigate(event) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-
     const section = document.getElementById(to)
     if (!section) return
-
     event.preventDefault()
     section.focus({ preventScroll: true })
     section.scrollIntoView()
   }
 
   return <a {...props} href={`#${to}`} onClick={navigate}>{children}</a>
+}
+
+// The one checkout button. Goes straight to Stripe once STRIPE_PREORDER_URL is set (src/config.js).
+function PreorderButton() {
+  if (STRIPE_PREORDER_URL) {
+    return <a className="button button-buy" href={STRIPE_PREORDER_URL}>Preorder · ${PREORDER_PRICE} <span aria-hidden="true">→</span></a>
+  }
+  return <span className="button button-buy is-soon" aria-disabled="true">Preorders open soon</span>
+}
+
+// Header shortcut: straight to Stripe when live, otherwise to the preorder section.
+function PreorderShortcut() {
+  const label = <>Preorder <span className="nav-price">${PREORDER_PRICE}</span></>
+  if (STRIPE_PREORDER_URL) return <a className="nav-buy" href={STRIPE_PREORDER_URL}>{label}</a>
+  return <SectionLink className="nav-buy" to="preorder">{label}</SectionLink>
 }
 
 function ThemeToggle() {
@@ -62,17 +78,13 @@ function App() {
   return (
     <>
       <SectionLink className="skip-link" to="main">Skip to content</SectionLink>
-      <div className="announcement" id="top" tabIndex={-1}>
-        <span className="announcement-dot" aria-hidden="true" />
-        <span>OXFORD COLLEGE PILOT</span><span aria-hidden="true">/</span><span>SPRING 2027</span>
-      </div>
-      <header className="site-header">
+      <header className="site-header" id="top" tabIndex={-1}>
         <div className="shell nav-layout">
           <SectionLink className="wordmark" to="top" aria-label="Clutch home">CLUTCH<span>.</span></SectionLink>
           <nav aria-label="Main navigation">
-            <SectionLink to="kit">The kit</SectionLink>
-            <SectionLink className="nav-faq" to="faq">FAQ</SectionLink>
-            <SectionLink className="nav-pilot" to="pilot">Pilot details <span aria-hidden="true">↗</span></SectionLink>
+            <SectionLink to="kit">Kit</SectionLink>
+            <SectionLink to="faq">FAQ</SectionLink>
+            <PreorderShortcut />
             <ThemeToggle />
           </nav>
         </div>
@@ -83,62 +95,56 @@ function App() {
           <div className="hero-copy">
             <p className="eyebrow"><span aria-hidden="true">✦</span> The going-out kit</p>
             <h1 id="hero-title">CAME IN<br /><em>CLUTCH.</em></h1>
-            <p className="hero-description">The stuff you end up looking for at 1 a.m., packed in one pocket-sized pouch.</p>
+            <p className="hero-description">Two drink tests, two condoms, a vomit bag and gum in a 4.5 × 3 in pouch that fits a purse.</p>
             <div className="hero-actions">
-              <SectionLink className="button button-dark" to="kit-title">See what’s inside <span aria-hidden="true">↘</span></SectionLink>
-              <div className="price"><strong>$20</strong><span>Target price</span></div>
+              <PreorderButton />
+              <p className="price"><strong>${PREORDER_PRICE}</strong><span>Preorder<br />${RETAIL_PRICE} at launch</span></p>
             </div>
+            <p className="hero-meta">
+              <SectionLink className="text-link" to="kit-title">See what’s inside <span aria-hidden="true">↘</span></SectionLink>
+              <span>Oxford College · Spring 2027</span>
+            </p>
           </div>
           <figure className="hero-figure">
-            <img src="/clutch-pouch-preview.jpg" alt="Glossy fuchsia CLUTCH pouch with a black top zipper and horizontal Admit One band" width="1200" height="1200" fetchPriority="high" />
-            <div className="size-sticker"><strong>4.5 × 3</strong><span>INCHES</span></div>
-            <figcaption>Product concept · Fuchsia</figcaption>
+            <img
+              src={colors1350}
+              srcSet={`${colors800} 800w, ${colors1350} 1350w`}
+              sizes="(max-width: 700px) 100vw, 52vw"
+              alt="Fuchsia pink and lemon yellow CLUTCH pouches with black zippers and Admit One bands"
+              width="1350"
+              height="900"
+              fetchPriority="high"
+            />
+            <div className="size-sticker" aria-hidden="true"><strong>4.5 × 3</strong><span>INCHES</span></div>
+            <figcaption>Product concept</figcaption>
           </figure>
         </section>
 
-        <div className="product-strip">
-          <div className="shell strip-inner">
-            <span>REUSABLE VINYL POUCH</span><span className="strip-star" aria-hidden="true">✦</span>
-            <span>TWO LAUNCH COLORS</span><span className="strip-star" aria-hidden="true">✦</span>
-            <span>ROOM FOR ONE EXTRA</span>
-          </div>
-        </div>
+        <p className="wristband">
+          <span aria-hidden="true">CLUTCH · ADMIT ONE</span>
+          <span>Reusable vinyl pouch</span>
+          <span>Fuchsia or lemon</span>
+          <span>Room for one extra</span>
+          <span aria-hidden="true">CLUTCH · ADMIT ONE</span>
+        </p>
 
-        <section className="kit" id="kit" tabIndex={-1} aria-labelledby="kit-title">
-          <div className="shell">
-            <h2 id="kit-title" tabIndex={-1}>WHAT’S INSIDE.</h2>
-            <p className="kit-hint">Drag to turn the pouch, or select an item to see it in 3D.</p>
-            <ClutchMockup />
-          </div>
+        <section className="kit shell" id="kit" tabIndex={-1} aria-labelledby="kit-title">
+          <h2 id="kit-title" tabIndex={-1}>WHAT’S INSIDE.</h2>
+          <p className="kit-hint">Drag to turn it. Tap an item to see it.</p>
+          <ClutchMockup />
         </section>
 
-        <section className="colors" aria-labelledby="colors-title">
-          <div className="shell color-layout">
-            <figure className="color-figure">
-              <img src={colorPouches} alt="Fuchsia pink and lemon yellow CLUTCH pouches on a lavender backdrop" width="1350" height="900" loading="lazy" />
-              <figcaption>Product concepts</figcaption>
-            </figure>
-            <div className="color-copy">
-              <h2 id="colors-title">TWO <br />COLORWAYS.</h2>
-              <ul className="swatches" aria-label="Launch colors">
-                <li><span className="swatch fuchsia" aria-hidden="true" />Fuchsia pink</li>
-                <li><span className="swatch lemon" aria-hidden="true" />Lemon yellow</li>
-              </ul>
+        <section className="preorder shell" id="preorder" tabIndex={-1} aria-labelledby="preorder-title">
+          <div className="ticket">
+            <div className="ticket-copy">
+              <p className="eyebrow"><span aria-hidden="true">✦</span> Oxford goes first</p>
+              <h2 id="preorder-title">PREORDER<br />{' '}FOR ${PREORDER_PRICE}.</h2>
+              <p>The first batch goes to Oxford College in spring 2027. Lock in ${PREORDER_PRICE} now; it’s ${RETAIL_PRICE} at launch.</p>
             </div>
-          </div>
-        </section>
-
-        <section className="pilot shell" id="pilot" tabIndex={-1} aria-labelledby="pilot-title">
-          <div className="pilot-ticket">
-            <div className="pilot-copy">
-              <p className="eyebrow"><span aria-hidden="true">✦</span> The first drop</p>
-              <h2 id="pilot-title">OXFORD<br />GOES FIRST.</h2>
-              <p>We’re three Emory students planning our first run for students and clubs at Oxford College. Pre-orders are in the works.</p>
-            </div>
-            <div className="pilot-stub">
-              <span>PLANNED PILOT</span>
-              <strong>SPRING <br />2027</strong>
-              <SectionLink className="text-link" to="faq">Pilot FAQ <span aria-hidden="true">↘</span></SectionLink>
+            <div className="ticket-stub">
+              <span>ADMIT ONE</span>
+              <strong>${PREORDER_PRICE}</strong>
+              <PreorderButton />
             </div>
           </div>
         </section>
@@ -159,7 +165,7 @@ function App() {
       <footer className="site-footer">
         <div className="shell footer-layout">
           <SectionLink className="wordmark" to="top" aria-label="Clutch home">CLUTCH<span>.</span></SectionLink>
-          <p>Created by Emory students.</p>
+          <p>Made by Emory students.</p>
           <SectionLink className="text-link" to="top">Back to top <span aria-hidden="true">↑</span></SectionLink>
         </div>
       </footer>
