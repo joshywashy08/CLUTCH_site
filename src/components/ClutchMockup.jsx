@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { CONTENTS } from '../contents.jsx';
+import { useRef, useState } from 'react';
 import './ClutchMockup.css';
 
-// 3D model of the pouch. Drag to turn it. Click the zipper (or "Unzip") and the contents
-// open in an overlay on top of the model, with a close button.
+// 3D model of the pouch. Drag to turn it, or use the arrow keys. It only shows the pouch:
+// what's inside is listed beside it on the page, with a drawing of each item.
 
 const COLORS = [
   { key: 'fuchsia', name: 'Fuchsia', value: '#d9327e' },
@@ -48,35 +47,15 @@ const REST = { x: -16, y: -24 };
 const clampX = (v) => Math.max(-70, Math.min(40, v));
 
 export default function ClutchMockup() {
-  const [open, setOpen] = useState(false);
-  const [sel, setSel] = useState('test');
   const [color, setColor] = useState(COLORS[0]);
   const [rot, setRot] = useState(REST);
   const [dragging, setDragging] = useState(false);
   const [touched, setTouched] = useState(false);
-
   const drag = useRef(null);
-  const closeRef = useRef(null);
-  const openRef = useRef(null);
-  const wasOpen = useRef(false);
-
-  // Focus the close button when the overlay opens, and return focus when it closes.
-  useEffect(() => {
-    if (open) closeRef.current?.focus();
-    else if (wasOpen.current) openRef.current?.focus();
-    wasOpen.current = open;
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
 
   // Drag to rotate. Mouse turns both ways; touch turns sideways only, so the page still scrolls.
   const onPointerDown = (e) => {
-    if (open || e.button > 0 || e.target.closest('button')) return;
+    if (e.button > 0) return;
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, start: rot, moved: false, touch: e.pointerType !== 'mouse' };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
@@ -98,20 +77,18 @@ export default function ClutchMockup() {
   // Keyboard: arrow keys turn the model when the stage has focus.
   const onKeyDown = (e) => {
     const step = { ArrowLeft: [0, -15], ArrowRight: [0, 15], ArrowUp: [10, 0], ArrowDown: [-10, 0] }[e.key];
-    if (!step || open) return;
+    if (!step) return;
     e.preventDefault();
     setTouched(true);
     setRot((r) => ({ x: clampX(r.x + step[0]), y: r.y + step[1] }));
   };
 
-  const doOpen = () => { setTouched(true); setOpen(true); };
-  const current = CONTENTS.find((c) => c.key === sel);
   const edgeOn = Math.abs(Math.cos((rot.y * Math.PI) / 180)) < 0.3;
 
   return (
     <div className="clutch-mockup" style={{ '--c': color.value }}>
       <div
-        className={'stage' + (open ? ' open' : '') + (dragging ? ' dragging' : '') + (touched ? ' touched' : '')}
+        className={'stage' + (dragging ? ' dragging' : '') + (touched ? ' touched' : '')}
         tabIndex={0}
         role="group"
         aria-label="3D model of the Clutch pouch. Drag or use the arrow keys to turn it."
@@ -129,56 +106,17 @@ export default function ClutchMockup() {
               {LAYERS.map((l) => (
                 <div key={l.k} className={'layer' + (l.k === 0 ? ' seam' : '') + (l.k === STEPS ? ' front' : '')} style={l.style}>
                   <div className="band">{l.k === STEPS && <span>CLUTCH</span>}</div>
-                  {/* The zipper is a real button on the front panel, so it turns with the pouch. */}
-                  {l.k === STEPS && (
-                    <button type="button" className="zip" tabIndex={-1} aria-hidden="true" onClick={doOpen}>
-                      <span className="teeth" /><span className="pull" />
-                    </button>
-                  )}
+                  {l.k === STEPS && <span className="zip" aria-hidden="true"><span className="teeth" /><span className="pull" /></span>}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {!open && <p className="drag-hint" aria-hidden="true"><span>⟲</span> Drag to turn</p>}
-        {!open && (
-          <button type="button" ref={openRef} className="unzip" aria-expanded={open} aria-controls="kit-contents" onClick={doOpen}>
-            Unzip <span aria-hidden="true">↗</span>
-          </button>
-        )}
+        <p className="drag-hint" aria-hidden="true"><span>⟲</span> Drag to turn</p>
         <p className="dims" aria-hidden="true">4.5 × 3 in.</p>
-
-        {/* Contents overlay: sits on top of the model, inside the same box. */}
-        {open && (
-          <div className="contents-overlay" id="kit-contents" role="dialog" aria-modal="false" aria-labelledby="kit-contents-title">
-            <div className="overlay-head">
-              <h3 id="kit-contents-title">What’s inside</h3>
-              <button type="button" ref={closeRef} className="overlay-close" onClick={() => setOpen(false)}>
-                <span aria-hidden="true">✕</span> Close
-              </button>
-            </div>
-            <ul className="tiles">
-              {CONTENTS.map((item, i) => (
-                <li key={item.key} style={{ '--i': i }}>
-                  <button type="button" className={item.key === 'slot' ? 'is-slot' : undefined} aria-pressed={sel === item.key} onClick={() => setSel(item.key)}>
-                    <span className={'art' + (item.art.stack ? ' stack' : '')} aria-hidden="true">
-                      {Array.from({ length: item.art.n }, (_, k) => (
-                        <span key={k} className={`item ${item.art.cls}`} style={{ width: item.art.w, height: item.art.h }}>{item.art.body}</span>
-                      ))}
-                    </span>
-                    <span className="tile-name"><b>{item.count}</b>{item.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <p className="tile-detail" aria-live="polite"><strong>{current.name}.</strong> {current.text}</p>
-          </div>
-        )}
       </div>
 
-      {/* The color and view controls only act on the model, so they hide while the contents overlay is open. */}
-      {!open && (
       <div className="bar">
         <div className="colors" role="group" aria-label="Pouch color">
           {COLORS.map((c) => (
@@ -189,8 +127,7 @@ export default function ClutchMockup() {
         </div>
         <button type="button" className="reset" onClick={() => { setRot(REST); setTouched(true); }}>Reset view</button>
       </div>
-      )}
-      <p className="notes">Concept model rendered with CSS at 4.5 × 3 in. Item sizes are estimates until a sample is packed. A negative drink test is not a guarantee.</p>
+      <p className="notes">Concept model rendered with CSS at 4.5 × 3 in.</p>
     </div>
   );
 }

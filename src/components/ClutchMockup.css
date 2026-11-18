@@ -1,14 +1,11 @@
-/* 3D pouch you can turn, with the contents in an overlay on top of it.
+/* 3D pouch you can turn.
    Everything is scoped under .clutch-mockup. Matte on purpose: flat color, no highlights. */
 .clutch-mockup { --band: #121318; display: grid; gap: 10px; width: 100%; }
 .clutch-mockup * { box-sizing: border-box; }
 
 /* Stage */
-.clutch-mockup .stage { position: relative; height: 380px; transition: height .25s ease; border: 2px solid var(--text); background: var(--panel); overflow: hidden; user-select: none; -webkit-user-select: none; cursor: grab; touch-action: pan-y; }
+.clutch-mockup .stage { position: relative; height: 380px; border: 2px solid var(--text); background: var(--panel); overflow: hidden; user-select: none; -webkit-user-select: none; cursor: grab; touch-action: pan-y; }
 .clutch-mockup .stage.dragging { cursor: grabbing; }
-.clutch-mockup .stage.open { cursor: default; height: auto; min-height: 380px; }
-/* When open, the overlay sits in the flow so the box grows to fit the contents, no more, no less. */
-.clutch-mockup .open .contents-overlay { position: relative; inset: auto; overflow: visible; }
 .clutch-mockup .stage:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .clutch-mockup .scene { position: absolute; left: 50%; top: 50%; width: 0; height: 0; perspective: 1300px; transform: translateY(-6px) scale(.86); }
 .clutch-mockup .sway, .clutch-mockup .rig { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
@@ -27,54 +24,18 @@
 .clutch-mockup .band { position: absolute; left: 0; right: 0; top: var(--band-top, 82px); height: 60px; display: grid; place-items: center; background: var(--band); }
 .clutch-mockup .band span { padding-left: 9px; color: #fff; font: 700 25px/1 'Space Grotesk', system-ui, sans-serif; letter-spacing: 9px; }
 
-/* Zipper: a button on the front face. Its padding makes the click area taller than the teeth. */
-.clutch-mockup .zip { position: absolute; left: 12px; right: 12px; top: 6px; height: 34px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+/* Zipper: drawn on the front panel. It doesn't do anything. */
+.clutch-mockup .zip { position: absolute; left: 12px; right: 12px; top: 6px; height: 34px; }
 .clutch-mockup .zip::before { content: ''; position: absolute; left: 8px; right: 8px; top: 11px; height: 12px; border-radius: 2px; background: var(--band); }
 .clutch-mockup .teeth { position: absolute; left: 10px; right: 10px; top: 14px; height: 6px; background-image: repeating-linear-gradient(90deg, #3a3c44 0 3px, transparent 3px 6px); }
 .clutch-mockup .pull { position: absolute; right: 4px; top: 8px; width: 30px; height: 18px; border-radius: 3px 8px 8px 3px; background: #6f7177; transition: right .35s cubic-bezier(.2, .8, .2, 1); }
 .clutch-mockup .pull::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; border-radius: 3px; background: #55575d; }
-.clutch-mockup .zip:hover .pull { right: 22px; }
-.clutch-mockup .zip:hover::before { box-shadow: 0 0 0 3px var(--fuchsia); }
-.clutch-mockup .open .pull { right: calc(100% - 38px); }
 
 /* Labels on the stage */
 .clutch-mockup .drag-hint { position: absolute; left: 12px; top: 12px; margin: 0; display: flex; align-items: center; gap: 6px; font: 700 12px/1 'Space Grotesk', sans-serif; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; transition: opacity .3s ease; }
 .clutch-mockup .drag-hint span { font-size: 16px; }
 .clutch-mockup .touched .drag-hint { opacity: .45; }
-.clutch-mockup .unzip { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 2px solid var(--text); background: var(--fuchsia); color: #fff; font: 700 14px/1 'Space Grotesk', sans-serif; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0 var(--text); }
-.clutch-mockup .unzip:focus-visible, .clutch-mockup .overlay-close:focus-visible, .clutch-mockup .tiles button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .clutch-mockup .dims { position: absolute; left: 12px; bottom: 12px; margin: 0; padding: 6px 8px; border: 2px solid var(--text); font: 700 11px/1 'Space Grotesk', sans-serif; letter-spacing: .08em; pointer-events: none; }
-
-/* Contents overlay, on top of the model */
-.clutch-mockup .contents-overlay { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; padding: 12px; background: color-mix(in srgb, var(--surface) 94%, transparent); cursor: default; overflow: auto; }
-.clutch-mockup .overlay-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.clutch-mockup .overlay-head h3 { padding: 7px 10px; background: var(--ink); color: #fff; font: 700 14px/1 'Space Grotesk', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
-.clutch-mockup .overlay-close { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 2px solid var(--text); background: var(--block); color: var(--block-text); font: 700 13px/1 'Space Grotesk', sans-serif; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
-.clutch-mockup .overlay-close span { font-size: 18px; }
-.clutch-mockup .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; list-style: none; margin: 0; padding: 0; align-content: start; }
-.clutch-mockup .tiles button { display: grid; grid-template-rows: 78px auto; gap: 6px; width: 100%; height: 100%; padding: 6px; border: 2px solid var(--text); background: var(--panel); color: var(--text); text-align: left; cursor: pointer; }
-.clutch-mockup .tiles button.is-slot { border-style: dashed; }
-.clutch-mockup .tiles button[aria-pressed='true'] { border-color: var(--fuchsia); box-shadow: inset 0 0 0 2px var(--fuchsia); }
-.clutch-mockup .tile-name { display: flex; align-items: center; gap: 6px; font: 700 12px/1.15 'Space Grotesk', sans-serif; letter-spacing: .05em; text-transform: uppercase; }
-.clutch-mockup .tile-name b { display: grid; place-items: center; flex: 0 0 20px; height: 20px; background: var(--block); color: var(--block-text); font-size: 11px; }
-.clutch-mockup .is-slot .tile-name b { background: var(--fuchsia); color: #fff; }
-.clutch-mockup .tile-detail { margin: 0; padding: 10px 12px; border-left: 6px solid var(--fuchsia); background: var(--panel); font-size: 14px; line-height: 1.45; }
-
-/* Item drawings */
-.clutch-mockup .art { display: flex; align-items: center; justify-content: center; gap: 6px; background: #ede6dc; overflow: hidden; }
-.clutch-mockup .art.stack { flex-direction: column; gap: 5px; }
-.clutch-mockup .item { position: relative; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 5px; font: 600 9px/1 'Inter', system-ui, sans-serif; text-align: center; box-shadow: 0 2px 6px rgba(18, 19, 24, .14); }
-.clutch-mockup .i-card { background: #faf8f4; color: #121318; border-color: #d8d2c8; padding-bottom: 10px; overflow: hidden; }
-.clutch-mockup .i-card::after { content: ''; position: absolute; left: 0; right: 0; bottom: 7px; height: 5px; background: #121318; }
-.clutch-mockup .i-card b { font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; font-size: 10px; }
-.clutch-mockup .i-bag { background: #3a3d47; color: #f3f1ec; border-color: #4a4d57; }
-.clutch-mockup .i-condom { background: #d9dade; border: 2px dotted #8d9099; border-radius: 4px; }
-.clutch-mockup .i-condom::before { content: ''; position: absolute; width: 64%; height: 64%; border-radius: 50%; border: 2px solid rgba(18, 19, 24, .16); }
-.clutch-mockup .i-test { background: #faf8f4; color: #121318; border-color: #d8d2c8; justify-content: flex-start; padding-left: 8px; }
-.clutch-mockup .i-test::after { content: ''; position: absolute; right: 7px; top: 50%; width: 18px; height: 14px; margin-top: -7px; border-radius: 2px; background: linear-gradient(90deg, var(--fuchsia) 0 7px, transparent 7px 10px, #121318 10px); }
-.clutch-mockup .i-bandage { border-radius: 14px; border-color: #c9a27e; background: radial-gradient(circle, rgba(59, 42, 28, .18) 1px, transparent 1.5px) 0 0 / 7px 7px, linear-gradient(90deg, #e2bf98 0 32%, #f5ece0 32% 68%, #e2bf98 68%); }
-.clutch-mockup .i-mint { border-radius: 7px; background: linear-gradient(90deg, #d7d2c8 0 14%, #faf8f4 14% 86%, #d7d2c8 86%); border-color: #cfc8bc; }
-.clutch-mockup .i-slot { background: transparent; color: #121318; border: 2px dashed #121318; box-shadow: none; }
 
 /* Under the stage */
 .clutch-mockup .bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -88,26 +49,13 @@
 @media (max-width: 600px) {
   .clutch-mockup .stage { height: 360px; }
   .clutch-mockup .scene { transform: translateY(-14px) scale(.7); }
-  .clutch-mockup .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .clutch-mockup .tiles button { grid-template-rows: 60px auto; }
-  .clutch-mockup .art { zoom: .85; }
-  .clutch-mockup .tile-detail { font-size: 13px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Idle sway until someone touches it. */
-  .clutch-mockup .stage:not(.touched):not(.open) .sway { animation: mockup-sway 7s ease-in-out infinite; }
-  .clutch-mockup .stage:not(.touched) .unzip { animation: unzip-nudge 2.4s ease-in-out infinite; }
-  .clutch-mockup .unzip { transition: transform .15s cubic-bezier(.2, .8, .2, 1), box-shadow .15s ease; }
-  .clutch-mockup .unzip:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--text); }
-  .clutch-mockup .contents-overlay { animation: overlay-in .25s cubic-bezier(.2, .8, .2, 1) both; }
-  .clutch-mockup .tiles li { animation: tile-in .3s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 30ms + 80ms); }
-  .clutch-mockup .open .scene { transition: opacity .25s ease .1s; opacity: .2; }
+  .clutch-mockup .stage:not(.touched) .sway { animation: mockup-sway 7s ease-in-out infinite; }
 }
 @keyframes mockup-sway { 0%, 100% { transform: rotateY(-8deg); } 50% { transform: rotateY(10deg) translateY(-6px); } }
-@keyframes unzip-nudge { 0%, 70%, 100% { transform: none; } 80% { transform: translate(-2px, -3px); } 90% { transform: none; } }
-@keyframes overlay-in { from { opacity: 0; transform: translateY(10px); } }
-@keyframes tile-in { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) {
   .clutch-mockup .rig, .clutch-mockup .pull, .clutch-mockup .layer, .clutch-mockup .rib { transition: none; }
 }

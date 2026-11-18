@@ -20,6 +20,13 @@ const questions = [
   ['What can the drink tests tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: Valium, Ketamine, Xanax, etc. Full documentation is on the insert card included in the poouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
 ]
 
+// One plain sentence for the hero, built from the same list as the "What's inside" section.
+const INSIDE_LINE = (() => {
+  const parts = CONTENTS.filter((c) => c.key !== 'slot').map((c) => `${c.count === '1' ? 'a' : 'two'} ${c.short.toLowerCase()}`)
+  const line = `${parts.join(', ')} and one empty slot for your own thing.`
+  return line[0].toUpperCase() + line.slice(1)
+})()
+
 const POUCHES = {
   fuchsia: { name: 'Fuchsia', src: fuchsia1200, small: fuchsia640, alt: 'Fuchsia Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
   ivory: { name: 'Ivory', src: ivory1200, small: ivory640, alt: 'Ivory Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
@@ -283,11 +290,7 @@ function App() {
           <HeroPouches />
           <div className="hero-inside">
             <p className="hero-inside-label">Inside every pouch</p>
-            <ul className="inside-chips" aria-label="What's inside">
-              {CONTENTS.map((c) => (
-                <li key={c.key} className={c.key === 'slot' ? 'is-slot' : undefined}><b aria-hidden="true">{c.count}</b>{c.short}</li>
-              ))}
-            </ul>
+            <p className="inside-line">{INSIDE_LINE}</p>
             <SectionLink className="text-link" to="kit-title">What each one is for <span aria-hidden="true">↓</span></SectionLink>
           </div>
           <div className="hero-actions">
@@ -315,8 +318,12 @@ function App() {
             <ol className="kit-items">
               {CONTENTS.map((c) => (
                 <li key={c.key} className={c.key === 'slot' ? 'is-slot' : undefined}>
-                  <b aria-hidden="true">{c.count}</b>
-                  <span><strong>{c.name}</strong>{c.text}</span>
+                  <span className={'kit-art' + (c.art.stack ? ' stack' : '')} aria-hidden="true">
+                    {Array.from({ length: c.art.n }, (_, k) => (
+                      <span key={k} className={`item ${c.art.cls}`} style={{ width: c.art.w, height: c.art.h }}>{c.art.body}</span>
+                    ))}
+                  </span>
+                  <span className="kit-text"><strong><b aria-hidden="true">{c.count}</b>{c.name}</strong>{c.text}</span>
                 </li>
               ))}
             </ol>
