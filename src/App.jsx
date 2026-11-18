@@ -11,9 +11,9 @@ import { FEEDBACK, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './c
 // Keep every claim here true: no safety promises, no accuracy numbers.
 const questions = [
   ['What’s the empty space for?', 'Whatever you’d turn around for. Lip gloss, travel perfume, earplugs, a hair tie, a spare key. The space is part of the kit: we leave it empty on purpose so that the pouch is fit for your night.'],
-  ['Why not just grab this stuff myself?', 'You could; but people don’t, and you find out at 1 a.m. We want to make your pregame as easy as possible: Clutch puts all of it in one pouch that lives in your bag, so it’s already there when someone needs it.'],
+  ['Why not just grab this stuff myself?', 'You could; but people don’t, and you find out at 1 a.m. We want to make your pregame as easy as possible: Clutch puts all of it in one pouch that lives in your bag, so it’s already there when someone needs it. And buying each thing yourself means a full box of everything. Clutch gives you the amounts a night out needs, for less than buying it all separately.'],
   ['What’s inside?', 'A drink-spike test, two condoms, two bandages, a vomit bag, two mints, an instruction card and one empty slot for your own item.'],
-  ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches. The pouch is reusable, so restock it from your own drawer and keep carrying it.`],
+  ['How much is it?', `$${PREORDER_PRICE} if you preorder. $${RETAIL_PRICE} once the kit launches. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
   ['What colors does it come in?', 'Fuchsia and ivory. Both have the black CLUTCH band.'],
   ['When and where do I get one?', 'The first batch is for Emory University in spring 2027. Preorders are picked up on campus.'],
   ['Can my club or chapter get a box?', 'That’s the plan. We’re designing boxes of 25 kits with bonus refills for fraternities, sororities and clubs.'],
@@ -219,7 +219,7 @@ const FEATURES = [
   { n: '1', title: 'The band', text: 'One black band all the way around, with CLUTCH in white. It’s the logo, and it’s what people notice first.', x: 50, y: 45 },
   { n: '2', title: 'The zipper', text: 'Runs along the top of the front, so nothing falls out until you open it.', x: 62, y: 21 },
   { n: '3', title: 'The size', text: '4.5 × 3 in. and about 0.9 in. thick packed. It fits a small purse or a clutch.', x: 84, y: 43 },
-  { n: '4', title: 'It stays', text: 'Reusable vinyl in fuchsia or ivory. Restock it from your own drawer and keep carrying it.', x: 25, y: 66 },
+  { n: '4', title: 'It stays', text: 'Reusable vinyl in fuchsia or ivory. Restock it from your own drawer or with a Clutch refill (coming soon).', x: 25, y: 66 },
 ]
 
 function PouchSection() {
@@ -228,8 +228,8 @@ function PouchSection() {
     <section className="pouch-section shell" id="pouch" tabIndex={-1} aria-labelledby="pouch-title" data-reveal>
       <div className="pouch-head">
         <p className="eyebrow">The product</p>
-        <h2 id="pouch-title">The pouch is the point.</h2>
-        <p>Everything inside the kit you could find at a pharmacy. The pouch you can’t. It’s what stays in your bag after the night, and it’s what we’re making.</p>
+        <h2 id="pouch-title">Come in clutch.</h2>
+        <p>Be the one who has the thing someone needs. The pouch keeps a night’s worth of essentials in one place, stays in your bag after, and gets restocked instead of thrown out.</p>
       </div>
       <div className="pouch-layout">
         <figure className={'pouch-diagram' + (active ? ' has-active' : '')}>
