@@ -46,3 +46,7 @@ section[id] { scroll-margin-top: 90px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* iOS draws a grey box over anything tappable. Turn it off; keyboard focus styles still show. */
+a, button, [role='button'], .stage { -webkit-tap-highlight-color: transparent; }
+.pouch img, .pocket-render img { -webkit-touch-callout: none; }
