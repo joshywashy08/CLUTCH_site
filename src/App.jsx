@@ -5,9 +5,8 @@ import fuchsia1200 from './assets/pouch-fuchsia-1200.webp'
 import fuchsia640 from './assets/pouch-fuchsia-640.webp'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
+import { CONTENTS } from './contents.jsx'
 import { FEEDBACK, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
-
-const KIT_LIST = [['1', 'Drink-spike test'], ['2', 'Condoms'], ['2', 'Bandages'], ['1', 'Vomit bag'], ['2', 'Mints'], ['1', 'Instruction card'], ['+', 'Your slot']]
 
 // Keep every claim here true: no safety promises, no accuracy numbers.
 const questions = [
@@ -278,19 +277,25 @@ function App() {
 
       <main id="main" tabIndex={-1}>
         <section className="hero shell" aria-labelledby="hero-title">
-          <div className="hero-copy">
+          <div className="hero-head">
             <p className="eyebrow">The pouch for going out</p>
             <h1 id="hero-title"><span className="h1-line">Came in</span> <span className="h1-band">Clutch.</span></h1>
-            <p className="hero-description">A 4.5 × 3 in. vinyl pouch with one black band. It fits a purse, the zipper keeps everything in, and it comes packed for the night: a drink test, two condoms, two bandages, a vomit bag and mints. Plus one empty slot that’s yours to fill.</p>
-            <div className="hero-actions">
-              <PreorderButton />
-              <p className="price"><strong>${PREORDER_PRICE}</strong><span>preorder<br />${RETAIL_PRICE} at launch</span></p>
-            </div>
-            <p className="hero-meta">
-              <SectionLink className="text-link" to="kit-title">See what’s inside <span aria-hidden="true">↓</span></SectionLink>
-            </p>
+            <p className="hero-description">A small pouch, packed for the night. Zip it, drop it in your bag, go.</p>
           </div>
           <HeroPouches />
+          <div className="hero-inside">
+            <p className="hero-inside-label">Inside every pouch</p>
+            <ul className="inside-chips" aria-label="What's inside">
+              {CONTENTS.map((c) => (
+                <li key={c.key} className={c.key === 'slot' ? 'is-slot' : undefined}><b aria-hidden="true">{c.count}</b>{c.short}</li>
+              ))}
+            </ul>
+            <SectionLink className="text-link" to="kit-title">What each one is for <span aria-hidden="true">↓</span></SectionLink>
+          </div>
+          <div className="hero-actions">
+            <PreorderButton />
+            <p className="price"><strong>${PREORDER_PRICE}</strong><span>preorder<br />${RETAIL_PRICE} at launch</span></p>
+          </div>
         </section>
 
         <div className="wristband">
@@ -303,6 +308,26 @@ function App() {
           </div>
         </div>
 
+        <section className="kit shell" id="kit" tabIndex={-1} aria-labelledby="kit-title" data-reveal>
+          <div className="kit-head">
+            <h2 id="kit-title" tabIndex={-1}>What’s inside.</h2>
+            <p className="kit-hint">Nine essentials and one empty slot, in a 4.5 × 3 in. pouch.</p>
+          </div>
+          <div className="kit-layout">
+            <ol className="kit-items">
+              {CONTENTS.map((c) => (
+                <li key={c.key} className={c.key === 'slot' ? 'is-slot' : undefined}>
+                  <b aria-hidden="true">{c.count}</b>
+                  <span><strong>{c.name}</strong>{c.text}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="kit-model">
+              <ClutchMockup />
+            </div>
+          </div>
+        </section>
+
         <PouchSection />
 
         <ul className="facts shell" aria-label="Key facts">
@@ -312,18 +337,6 @@ function App() {
           <li data-reveal><span>First batch</span><strong>Spring 2027</strong><small>Emory University · campus pickup</small></li>
         </ul>
 
-        <section className="kit shell" id="kit" tabIndex={-1} aria-labelledby="kit-title" data-reveal>
-          <div className="kit-layout">
-            <div className="kit-copy">
-              <h2 id="kit-title" tabIndex={-1}>What’s inside.</h2>
-              <p className="kit-hint">Nine essentials and one empty slot in a 4.5 × 3 in. pouch. Drag this CSS-animated model to turn it, then click the zipper or Unzip to see what each one is for.</p>
-              <ul className="kit-list">
-                {KIT_LIST.map(([n, name]) => <li key={name}><b>{n}</b>{name}</li>)}
-              </ul>
-            </div>
-            <ClutchMockup />
-          </div>
-        </section>
 
 
         <section className="slot-section" aria-labelledby="slot-title" data-reveal>

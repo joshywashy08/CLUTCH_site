@@ -6,7 +6,9 @@
 /* Stage */
 .clutch-mockup .stage { position: relative; height: 380px; transition: height .25s ease; border: 2px solid var(--text); background: var(--panel); overflow: hidden; user-select: none; -webkit-user-select: none; cursor: grab; touch-action: pan-y; }
 .clutch-mockup .stage.dragging { cursor: grabbing; }
-.clutch-mockup .stage.open { cursor: default; }
+.clutch-mockup .stage.open { cursor: default; height: auto; min-height: 380px; }
+/* When open, the overlay sits in the flow so the box grows to fit the contents, no more, no less. */
+.clutch-mockup .open .contents-overlay { position: relative; inset: auto; overflow: visible; }
 .clutch-mockup .stage:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .clutch-mockup .scene { position: absolute; left: 50%; top: 50%; width: 0; height: 0; perspective: 1300px; transform: translateY(-6px) scale(.86); }
 .clutch-mockup .sway, .clutch-mockup .rig { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; }
@@ -93,7 +95,6 @@
   .clutch-mockup .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .clutch-mockup .tiles button { grid-template-rows: 60px auto; }
   .clutch-mockup .art { zoom: .85; }
-  .clutch-mockup .stage.open { height: 620px; }
   .clutch-mockup .tile-detail { font-size: 13px; }
 }
 

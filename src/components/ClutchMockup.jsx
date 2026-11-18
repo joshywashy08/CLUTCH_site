@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CONTENTS } from '../contents.jsx';
 import './ClutchMockup.css';
 
 // 3D model of the pouch. Drag to turn it. Click the zipper (or "Unzip") and the contents
@@ -7,25 +8,6 @@ import './ClutchMockup.css';
 const COLORS = [
   { key: 'fuchsia', name: 'Fuchsia', value: '#d9327e' },
   { key: 'ivory', name: 'Ivory', value: '#ede6dc' },
-];
-
-// What each item is for. Keep it true: no safety promises, no accuracy numbers.
-// art: how the item is drawn (CSS class, size in px, how many, stacked or side by side).
-const CONTENTS = [
-  { key: 'test', name: 'Drink-spike test', count: '1', text: 'Check a drink if something feels off. A negative result is not a guarantee.',
-    art: { cls: 'i-test', w: 112, h: 40, n: 1, body: <span>DRINK TEST</span> } },
-  { key: 'condom', name: 'Condoms', count: '2', text: 'Individually wrapped. Two, because plans change.',
-    art: { cls: 'i-condom', w: 50, h: 50, n: 2, body: null } },
-  { key: 'bandage', name: 'Bandages', count: '2', text: 'For the blister your shoes give you by midnight, or a scrape on the walk home.',
-    art: { cls: 'i-bandage', w: 110, h: 24, n: 2, stack: true, body: null } },
-  { key: 'bag', name: 'Vomit bag', count: '1', text: 'Folded flat. Saves an Uber, a dorm room or a formal dress.',
-    art: { cls: 'i-bag', w: 120, h: 40, n: 1, body: <span>Vomit bag</span> } },
-  { key: 'mint', name: 'Mints', count: '2', text: 'Individually wrapped. One for you, one for whoever needs it.',
-    art: { cls: 'i-mint', w: 44, h: 30, n: 2, body: null } },
-  { key: 'card', name: 'Instruction card', count: '1', text: 'How to use the drink test, signs someone may have been drugged, and who to call. It says plainly that a negative test is not a guarantee.',
-    art: { cls: 'i-card', w: 104, h: 60, n: 1, body: <b>CLUTCH</b> } },
-  { key: 'slot', name: 'Your slot', count: '+', text: 'Left empty on purpose, and it’s part of the kit. Lip gloss, travel cologne, earplugs, a hair tie: whatever you’d turn around for.',
-    art: { cls: 'i-slot', w: 104, h: 40, n: 1, body: <span>Your item</span> } },
 ];
 
 const REST = { x: -16, y: -24 };
@@ -159,6 +141,8 @@ export default function ClutchMockup() {
         )}
       </div>
 
+      {/* The color and view controls only act on the model, so they hide while the contents overlay is open. */}
+      {!open && (
       <div className="bar">
         <div className="colors" role="group" aria-label="Pouch color">
           {COLORS.map((c) => (
@@ -169,6 +153,7 @@ export default function ClutchMockup() {
         </div>
         <button type="button" className="reset" onClick={() => { setRot(REST); setTouched(true); }}>Reset view</button>
       </div>
+      )}
       <p className="notes">Concept model at 4.5 × 3 in. Item sizes are estimates until a sample is packed. A negative drink test is not a guarantee.</p>
     </div>
   );
