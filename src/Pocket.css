@@ -63,3 +63,4 @@
   .compare th:first-child { width: 26%; }
   .scale-figure figcaption { position: static; padding: 0 10px 8px; }
 }
+.swatch-charcoal i { background: #34353b; }

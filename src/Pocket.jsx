@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import bone800 from './assets/pocket-bone-800.webp'
-import fuchsia800 from './assets/pocket-fuchsia-800.webp'
+import charcoal800 from './assets/pocket-charcoal-800.webp'
 import sizes1400 from './assets/sizes-1400.webp'
 import sizes800 from './assets/sizes-800.webp'
 import './App.css'
@@ -10,7 +10,7 @@ import './Pocket.css'
 // Every detail here is tentative. Keep it that way in the copy until samples and pricing are decided.
 
 const COLORS = {
-  fuchsia: { name: 'Fuchsia', src: fuchsia800 },
+  charcoal: { name: 'Charcoal', src: charcoal800 },
   bone: { name: 'Bone', src: bone800 },
 }
 
@@ -27,7 +27,7 @@ const SPECS = [
   ['Orientation', 'Vertical'],
   ['Zipper', 'Down the right side of the front'],
   ['Band', 'One black band across the pouch, CLUTCH in white'],
-  ['Colors', 'Fuchsia or bone'],
+  ['Colors', 'Charcoal or bone'],
   ['Material', 'Matte vinyl'],
   ['Fits', 'A jeans or jacket pocket'],
   ['Price', 'Around $10 (not set)'],
@@ -39,13 +39,14 @@ const COMPARE = [
   ['Shape', 'Horizontal', 'Vertical'],
   ['Zipper', 'Top of the front', 'Right side of the front'],
   ['Inside', '9 items + your slot', '6 items'],
+  ['Colors', 'Fuchsia or bone', 'Charcoal or bone'],
   ['Vomit bag', 'Yes', 'No: there isn’t room'],
   ['Price', '$12 preorder, $15 at launch', 'Around $10, not set'],
 ]
 
 export default function Pocket() {
-  const [color, setColor] = useState('fuchsia')
-  const other = color === 'fuchsia' ? 'bone' : 'fuchsia'
+  const [color, setColor] = useState('charcoal')
+  const other = color === 'charcoal' ? 'bone' : 'charcoal'
 
   return (
     <>
@@ -63,7 +64,7 @@ export default function Pocket() {
           <div className="pocket-copy">
             <p className="concept-flag">Concept · Not for sale</p>
             <h1 id="pocket-title"><span className="h1-line">Clutch</span> <span className="h1-band">Pocket.</span></h1>
-            <p className="hero-description">A smaller, vertical Clutch for nights without a bag. It keeps the black band and drops to the essentials, sized for a jeans pocket.</p>
+            <p className="hero-description">A smaller, vertical Clutch for anyone who goes out with just their pockets. It keeps the black band, drops to the essentials and fits a jeans or jacket pocket.</p>
             <p className="pocket-note">Everything on this page is tentative. Size, contents and price will change once we have samples.</p>
           </div>
           <figure className="pocket-figure">
@@ -115,7 +116,7 @@ export default function Pocket() {
         <section className="shell pocket-section" aria-labelledby="scale-title">
           <h2 id="scale-title">Next to the Clutch.</h2>
           <figure className="scale-figure">
-            <img src={sizes1400} srcSet={`${sizes800} 800w, ${sizes1400} 1400w`} sizes="(max-width: 900px) 92vw, 1180px" alt="The horizontal Clutch pouch next to the smaller vertical Pocket pouch, both fuchsia, shown at the same scale." width="1400" height="700" loading="lazy" />
+            <img src={sizes1400} srcSet={`${sizes800} 800w, ${sizes1400} 1400w`} sizes="(max-width: 900px) 92vw, 1180px" alt="The horizontal fuchsia Clutch pouch next to the smaller vertical charcoal Pocket pouch, shown at the same scale." width="1400" height="700" loading="lazy" />
             <figcaption>Concept renders at the same scale.</figcaption>
           </figure>
           <div className="compare-wrap">
