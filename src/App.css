@@ -209,6 +209,8 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 
 /* Preorder: the black band, big */
 .preorder { padding-top: clamp(36px, 4.5vw, 64px); }
+.preorder.groups { padding-top: 14px; }
+.group-link { flex-basis: 100%; }
 .preorder-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 28px 40px; padding: clamp(28px, 4.6vw, 60px); background: var(--block); color: var(--block-text); border: 2px solid light-dark(var(--ink), var(--line)); }
 .preorder-card h2 { margin-block: 16px 16px; font-size: clamp(3rem, 7vw, 6.2rem); }
 .preorder-card h2 span { color: var(--fuchsia); }

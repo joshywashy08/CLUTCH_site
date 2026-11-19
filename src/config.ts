@@ -7,6 +7,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 export const STRIPE_PREORDER_URL = ''
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GROUP ORDERS (chapters, clubs, events)
+// The address the "Ask about a box" button emails. It is public on the site.
+// Leave it empty and the button reads "Group orders open soon" and links nowhere.
+// ─────────────────────────────────────────────────────────────────────────────
+export const GROUP_ORDER_EMAIL = 'jl@joshleeliu.com'
+export const GROUP_BOX_SIZE = 25
+
 // Prices in USD. Also hard-coded in index.html meta tags (HTML can't import JS).
 export const PREORDER_PRICE = 12
 export const RETAIL_PRICE = 15

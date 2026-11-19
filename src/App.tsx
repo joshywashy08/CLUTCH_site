@@ -7,14 +7,19 @@ import fuchsia640 from './assets/pouch-fuchsia-640.webp'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
 import { CONTENTS } from './contents'
-import { FEEDBACK, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
+import { FEEDBACK, GROUP_BOX_SIZE, GROUP_ORDER_EMAIL, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
+
+// Group orders go by email until there is a checkout for them. The message starts with the three things we need to quote.
+const GROUP_MAILTO = GROUP_ORDER_EMAIL
+  ? `mailto:${GROUP_ORDER_EMAIL}?subject=${encodeURIComponent('CLUTCH box order')}&body=${encodeURIComponent('Organization or event:\nHow many kits:\nNeeded by:\n')}`
+  : ''
 
 // Keep every claim here true: no safety promises, no accuracy numbers.
 const questions: [string, ReactNode][] = [
   ['What’s inside?', 'A drink test, two condoms, two bandages, a vomit bag, two mints and an instruction card, plus one empty space for whatever you’d turn around for: lip gloss, travel perfume, a hair tie.'],
   ['Why not just grab this stuff myself?', 'You could, but people don’t, and you find out at 1 a.m. Clutch keeps it all in one pouch in your bag, in the amounts a night needs, for less than buying a full box of everything.'],
   ['How much is it, and what colors?', `$${PREORDER_PRICE} if you preorder, $${RETAIL_PRICE} at launch, in fuchsia or ivory. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
-  ['When and where do I get one?', 'The first batch is for Emory University in spring 2027, picked up on campus. Boxes of 25 for chapters and clubs are in the works.'],
+  ['When and where do I get one?', <>The first batch is for Emory University in spring 2027, picked up on campus. Buying for a chapter, club or event? Boxes start at {GROUP_BOX_SIZE} kits: {GROUP_MAILTO ? <a href={GROUP_MAILTO}>ask for a price</a> : 'group orders open soon'}.</>],
   ['What can the drink test tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: GHB, ketamine and benzodiazepines like Valium and Xanax. Full directions are on the card in the pouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
   ['What’s next?', <>Clutch Pocket: a smaller, vertical pouch for nights when you only have your pockets, in slate or ivory. It’s still a concept. <a href="/pocket/">See the Pocket</a>.</>],
 ]
@@ -34,7 +39,7 @@ const POUCHES = {
 // Things that fit the empty space (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
 const SLOT_IDEAS = ['Lip gloss', 'Travel cologne', 'Earplugs', 'A hair tie', 'Bobby pins', 'A folded $20', 'A spare key']
 
-const BAND = ['Came in CLUTCH', 'Fits a purse', 'Fuchsia or ivory', 'Space for your stuff', `$${PREORDER_PRICE} preorder`]
+const BAND = ['Came in CLUTCH', 'Fits a purse', 'Fuchsia or ivory', 'Space for your stuff', 'Boxes for chapters and events', `$${PREORDER_PRICE} preorder`]
 
 function SectionLink({ to, children, ...props }: { to: string; children: ReactNode } & Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'onClick'>) {
   function navigate(event: MouseEvent<HTMLAnchorElement>) {
@@ -57,6 +62,12 @@ function PreorderButton() {
     return <a className="button button-buy" href={STRIPE_PREORDER_URL}>Preorder · ${PREORDER_PRICE} <span aria-hidden="true">→</span></a>
   }
   return <span className="button button-buy is-soon" aria-disabled="true">Preorders open soon</span>
+}
+
+// Group orders: one email, since every box is quoted by hand for now.
+function GroupButton() {
+  if (GROUP_MAILTO) return <a className="button button-buy" href={GROUP_MAILTO}>Ask about a box <span aria-hidden="true">→</span></a>
+  return <span className="button button-buy is-soon" aria-disabled="true">Group orders open soon</span>
 }
 
 // Header shortcut: straight to Stripe when live, otherwise to the preorder section.
@@ -298,6 +309,7 @@ function App() {
           <div className="hero-actions">
             <PreorderButton />
             <p className="price"><strong>${PREORDER_PRICE}</strong><span>preorder<br />${RETAIL_PRICE} at launch</span></p>
+            <SectionLink className="text-link group-link" to="groups">Buying for a chapter, club or event? <span aria-hidden="true">↓</span></SectionLink>
           </div>
         </section>
 
@@ -380,6 +392,17 @@ function App() {
               <p>The first batch goes to Emory University in spring 2027. Lock in ${PREORDER_PRICE} now; it’s ${RETAIL_PRICE} at launch.</p>
             </div>
             <PreorderButton />
+          </div>
+        </section>
+
+        <section className="preorder groups shell" id="groups" tabIndex={-1} aria-labelledby="groups-title">
+          <div className="preorder-card" data-reveal>
+            <div>
+              <p className="eyebrow">Chapters, clubs and events</p>
+              <h2 id="groups-title">Order a <span>box.</span></h2>
+              <p>One for every member, date or guest. Boxes start at {GROUP_BOX_SIZE} kits for formals, date parties, bid day, festivals and orientation. Tell us how many and when, and we’ll send a price.</p>
+            </div>
+            <GroupButton />
           </div>
         </section>
 
