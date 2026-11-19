@@ -48,12 +48,12 @@ a.button:hover, button.button:hover { background: transparent; color: var(--text
 .button.is-line { background: transparent; color: var(--text); }
 a.button.is-line:hover { background: var(--block); color: var(--block-text); }
 
-/* Below the hero: FAQ on the left, size on the right (phone, pouch and card drawn at the same scale). */
+/* Below the hero: FAQ on the left, size on the right; on a phone the FAQ goes last, under the size drawing (phone, pouch and card drawn at the same scale). */
 .more { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; background: var(--panel); border-top: 2px solid var(--text); }
-.more.is-solo { grid-template-columns: 1fr; }
 .faq { padding: clamp(24px, 4vw, 56px) clamp(20px, 5vw, 72px); }
-.faq h2 { margin: 0 0 18px; font: 500 clamp(1.8rem, 3vw, 2.6rem)/1 var(--sharp); letter-spacing: -.03em; }
+.faq h2 { margin: 0; font: 500 clamp(1.8rem, 3vw, 2.6rem)/1 var(--sharp); letter-spacing: -.03em; }
 .faq details { border-top: 2px solid var(--line); }
+.faq h2 + details { margin-top: 18px; }
 .faq details:last-child { border-bottom: 2px solid var(--line); }
 .faq summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; font: 500 1.15rem/1.25 var(--sharp); cursor: pointer; list-style: none; }
 .faq summary::-webkit-details-marker { display: none; }
@@ -71,6 +71,7 @@ a.button.is-line:hover { background: var(--block); color: var(--block-text); }
 
 @media (max-width: 800px) {
   .hero, .more { grid-template-columns: 1fr; min-height: 0; }
+  .faq { order: 2; border-top: 2px solid var(--line); }
   .panel { padding: 78px 16px 20px; }
   .stack { width: min(100%, 460px); }
   .actions .button { align-self: stretch; }

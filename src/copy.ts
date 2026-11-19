@@ -12,13 +12,6 @@ export const PREORDER_PRICE = '$8'
 // The button that opens the page where you can work the zipper and take things out. Leave empty to hide the button.
 export const EXPLORE_LABEL = 'Explore'
 
-// FAQ: [question, answer]. The questions are from the Pocket mockup (Nov 18). The answers are blank until a person
-// writes them. A question with a blank answer shows only in `npm run dev`, never on the built site.
-export const FAQ: [string, string][] = [
-  ["What's inside?", ''],
-  ['Will it actually fit my pocket?', ''],
-  ['Is the drink test a guarantee?', ''],
-  ["What's it made of?", ''],
-  ['No vomit bag?', ''],
-  ['Is this final?', ''],
-]
+// FAQ: [question, answer]. Empty for now: the page shows the FAQ block with its heading and nothing under it.
+// Add a line per question when they are written, for example ['Question?', 'Answer.'],
+export const FAQ: [string, string][] = []

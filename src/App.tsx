@@ -109,9 +109,6 @@ function Product() {
   )
 }
 
-// Questions that have an answer. While developing, unanswered ones show too, so the layout can be judged.
-const QUESTIONS = FAQ.filter(([, answer]) => answer || import.meta.env.DEV)
-
 function App() {
   return (
     <main>
@@ -138,18 +135,16 @@ function App() {
       </section>
 
       {/* The pouch at true scale between a phone and a bank card. 100 units = 1 inch. */}
-      <section className={'more' + (QUESTIONS.length ? '' : ' is-solo')}>
-        {QUESTIONS.length > 0 && (
-          <div className="faq">
-            <h2>FAQ</h2>
-            {QUESTIONS.map(([question, answer]) => (
-              <details key={question}>
-                <summary>{question}</summary>
-                {answer && <p>{answer}</p>}
-              </details>
-            ))}
-          </div>
-        )}
+      <section className="more">
+        <div className="faq">
+          <h2>FAQ</h2>
+          {FAQ.map(([question, answer]) => (
+            <details key={question}>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
+        </div>
         <div className="size">
         <svg viewBox="0 0 1100 690" role="img" aria-label="Size comparison at the same scale: a phone at 5.8 by 2.8 inches, the pouch at 4.25 by 2.75 inches, and a bank card at 3.4 by 2.1 inches.">
           <rect className="sc-line" x="110" y="19" width="282" height="581" rx="38" />
