@@ -8,9 +8,15 @@ export const HEADLINE_MARK = ''
 // Prices. The retail price shows crossed out next to the preorder price.
 export const RETAIL_PRICE = '$12'
 export const PREORDER_PRICE = '$8'
+// The words on the preorder button.
+export const PREORDER_LABEL = 'Preorder January 2027'
 
-// The button that opens the page where you can work the zipper and take things out. Leave empty to hide the button.
-export const EXPLORE_LABEL = 'Explore'
+// The button that opens the explore page (the pouch that turns and empties). Leave empty to hide the button.
+export const EXPLORE_LABEL = 'Explore the 3D model'
+
+// The one line on the explore page, under the pouch.
+export const HINT_OPEN = 'Click the zipper to open'
+export const HINT_CLOSE = 'Click the zipper to close'
 
 // FAQ: [question, answer]. Empty for now: the page shows the FAQ block with its heading and nothing under it.
 // Add a line per question when they are written, for example ['Question?', 'Answer.'],

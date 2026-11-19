@@ -1,30 +1,19 @@
-/* /explore: one ivory surface with the pouch and its contents at one scale. Inside .bench, 1em = 1 inch.
+/* /explore: one ivory surface with the pouch and what is in it, at one scale. Inside .bench, 1em = 1 inch.
    The surface stays ivory in dark mode so the slate pouch is always visible. */
-.explore { position: relative; overflow: hidden; background: light-dark(#e3dace, var(--ivory)); color: var(--ink); }
+.explore { position: relative; min-height: 100svh; overflow: hidden; background: light-dark(#e3dace, var(--ivory)); color: var(--ink); }
 .explore .logo { text-decoration: none; }
-.bench { position: absolute; }
+.bench { position: absolute; top: 0; }
 .bench > * { position: absolute; }
 
-/* The pouch, and the strip over its zipper that takes the drag. */
-.pouch-x::before { content: ''; position: absolute; inset: 4% 5% 3%; border-radius: 22% / 15%; box-shadow: 0 .16em .2em rgba(18, 19, 24, .34); }
-.pouch-x canvas { position: relative; display: block; width: 100%; height: 100%; }
-.zipper { position: absolute; right: 0; top: 0; width: 30%; height: 100%; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; border-radius: .2em; }
-.zipper:active { cursor: grabbing; }
-.zipper:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+/* The pouch is the button. It moves aside while its frames play (zipper down, pouch turning). */
+.pouch-x { font-size: 1em; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; transition-property: left, top; transition-timing-function: ease-in-out; -webkit-tap-highlight-color: transparent; z-index: 3; }
+.pouch-x canvas { display: block; width: 100%; height: 100%; filter: drop-shadow(0 .14em .16em rgba(18, 19, 24, .3)); }
+.pouch-x:focus-visible { outline: 3px solid var(--ink); outline-offset: 6px; }
+.hint { position: absolute; left: 50%; top: calc(100% + .22em); translate: -50% 0; white-space: nowrap; font: 500 clamp(15px, .2em, 22px)/1.2 var(--sharp); }
 
-/* Dimension lines: a rule with a tick at each end and the measure in the middle. */
-.dim { display: grid; place-items: center; font-size: 1em; }
-.dim span { padding: 0 .5em; background: light-dark(#e3dace, var(--ivory)); font: 500 clamp(11px, .15em, 16px)/1 var(--sharp); white-space: nowrap; position: relative; }
-.dim-w { height: .16em; border-inline: 2px solid var(--ink); background: linear-gradient(var(--ink), var(--ink)) center / 100% 2px no-repeat; }
-.dim-h { width: .16em; border-block: 2px solid var(--ink); background: linear-gradient(var(--ink), var(--ink)) center / 2px 100% no-repeat; }
-.dim-h span { padding: .5em 0; writing-mode: vertical-rl; rotate: 180deg; }
+/* The things in the pouch. Hidden, they sit behind the pouch; shown, each is in its place. They pass under the pouch on the way. */
+.thing { display: block; z-index: 2; box-shadow: 0 .05em .09em rgba(18, 19, 24, .24); user-select: none; -webkit-user-select: none; pointer-events: none; }
 
-/* The things. Each is a render with its name on it. */
-.thing { font-size: 1em; padding: 0; border: 0; background: none; cursor: grab; touch-action: none; box-shadow: 0 .05em .09em rgba(18, 19, 24, .24); -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-.thing.is-held { cursor: grabbing; box-shadow: 0 .12em .2em rgba(18, 19, 24, .3); }
-.thing img { display: block; width: 100%; height: 100%; pointer-events: none; }
-.thing span { position: absolute; left: 50%; top: 50%; translate: -50% -50%; color: var(--ink); font: 500 clamp(10px, .15em, 17px)/1.1 var(--sharp); white-space: nowrap; pointer-events: none; }
-.thing.is-dark span { color: var(--ivory); }
-.thing.is-tall span { rotate: -90deg; }
-.thing.is-low span { top: 66%; } /* the card: under its logo */
-.thing:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .pouch-x, .thing { transition: none !important; }
+}

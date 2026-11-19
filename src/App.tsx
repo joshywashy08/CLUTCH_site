@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import { EXPLORE_LABEL, FAQ, HEADLINE, HEADLINE_MARK, PREORDER_PRICE, RETAIL_PRICE } from './copy'
-import { FRAMES, FRAME_H, FRAME_W, loadSheet, paintFrame } from './zip'
+import { EXPLORE_LABEL, FAQ, HEADLINE, HEADLINE_MARK, PREORDER_LABEL, PREORDER_PRICE, RETAIL_PRICE } from './copy'
+import { ZIP, loadSheet, paintFrame } from './zip'
 
 // What is in the pouch. Names and counts only.
 const CONTENTS: [number, string][] = [
@@ -31,10 +31,10 @@ function Product() {
   const frame = useRef(0)
   const raf = useRef(0)
 
-  const paint = () => paintFrame(canvas.current, sheet.current, frame.current)
+  const paint = () => paintFrame(canvas.current, sheet.current, ZIP, frame.current)
 
   useEffect(() => {
-    loadSheet().then((img) => {
+    loadSheet(ZIP).then((img) => {
       sheet.current = img
       paint()
     }, () => {})
@@ -43,10 +43,10 @@ function Product() {
 
   function toggle() {
     const next = !open
-    const target = next ? FRAMES - 1 : 0
+    const target = next ? ZIP.frames - 1 : 0
     const from = frame.current
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const ms = (ZIP_MS * Math.abs(target - from)) / (FRAMES - 1)
+    const ms = (ZIP_MS * Math.abs(target - from)) / (ZIP.frames - 1)
     setOpen(next)
     if (!next) setShown(false)
     cancelAnimationFrame(raf.current)
@@ -70,8 +70,8 @@ function Product() {
           <canvas
             ref={canvas}
             className="zip"
-            width={FRAME_W}
-            height={FRAME_H}
+            width={ZIP.w}
+            height={ZIP.h}
             role="img"
             aria-label="Slate pouch standing upright, with a zipper down the right side and a black band reading CLUTCH in white."
           />
@@ -128,7 +128,7 @@ function App() {
           </p>
           <div className="actions">
             {/* Placeholder: preorders are not open yet, so this button does nothing. */}
-            <button type="button" className="button">Preorder</button>
+            <button type="button" className="button">{PREORDER_LABEL}</button>
             {EXPLORE_LABEL && <a className="button is-line" href="/explore">{EXPLORE_LABEL}</a>}
           </div>
         </div>
