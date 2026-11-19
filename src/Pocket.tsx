@@ -38,7 +38,7 @@ const COMPARE = [
   ['Size', '4.5 × 3 in.', 'About 2.75 × 4.25 in.'],
   ['Shape', 'Horizontal', 'Vertical'],
   ['Zipper', 'Top of the front', 'Right side of the front'],
-  ['Inside', '9 items + your slot', '6 items'],
+  ['Inside', '9 items + your empty space', '6 items'],
   ['Colors', 'Fuchsia or ivory', 'Slate or ivory'],
   ['Vomit bag', 'Yes', 'No: there isn’t room'],
   ['Price', '$12 preorder, $15 at launch', 'Around $10, not set'],
@@ -102,7 +102,7 @@ export default function Pocket() {
 
         <section className="shell pocket-section" aria-labelledby="inside-title">
           <h2 id="inside-title">What’s inside.</h2>
-          <p className="section-sub">Six items. No vomit bag and no empty slot: there isn’t room.</p>
+          <p className="section-sub">Six items. No vomit bag and no empty space: there isn’t room.</p>
           <ul className="element-list">
             {ELEMENTS.map((e) => (
               <li key={e.name}>

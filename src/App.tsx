@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from 'react'
 import ivory1200 from './assets/pouch-ivory-1200.webp'
 import ivory640 from './assets/pouch-ivory-640.webp'
 import fuchsia1200 from './assets/pouch-fuchsia-1200.webp'
 import fuchsia640 from './assets/pouch-fuchsia-640.webp'
 import './App.css'
 import ClutchMockup from './components/ClutchMockup'
-import { CONTENTS } from './contents.jsx'
+import { CONTENTS } from './contents'
 import { FEEDBACK, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
 
 // Keep every claim here true: no safety promises, no accuracy numbers.
-const questions = [
+const questions: [string, ReactNode][] = [
   ['What’s inside?', 'A drink test, two condoms, two bandages, a vomit bag, two mints and an instruction card, plus one empty space for whatever you’d turn around for: lip gloss, travel perfume, a hair tie.'],
   ['Why not just grab this stuff myself?', 'You could, but people don’t, and you find out at 1 a.m. Clutch keeps it all in one pouch in your bag, in the amounts a night needs, for less than buying a full box of everything.'],
   ['How much is it, and what colors?', `$${PREORDER_PRICE} if you preorder, $${RETAIL_PRICE} at launch, in fuchsia or ivory. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
@@ -21,7 +22,7 @@ const questions = [
 // One plain sentence for the hero, built from the same list as the "What's inside" section.
 const INSIDE_LINE = (() => {
   const parts = CONTENTS.filter((c) => c.key !== 'slot').map((c) => `${c.count === '1' ? 'a' : 'two'} ${c.short.toLowerCase()}`)
-  const line = `${parts.join(', ')} and one empty slot for your own thing.`
+  const line = `${parts.join(', ')} and one empty space for your own thing.`
   return line[0].toUpperCase() + line.slice(1)
 })()
 
@@ -30,13 +31,13 @@ const POUCHES = {
   ivory: { name: 'Ivory', src: ivory1200, small: ivory640, alt: 'Ivory Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
 }
 
-// Things that fit the empty slot (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
+// Things that fit the empty space (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
 const SLOT_IDEAS = ['Lip gloss', 'Travel cologne', 'Earplugs', 'A hair tie', 'Bobby pins', 'A folded $20', 'A spare key']
 
 const BAND = ['Came in CLUTCH', 'Fits a purse', 'Fuchsia or ivory', 'Space for your stuff', `$${PREORDER_PRICE} preorder`]
 
-function SectionLink({ to, children, ...props }) {
-  function navigate(event) {
+function SectionLink({ to, children, ...props }: { to: string; children: ReactNode } & Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'onClick'>) {
+  function navigate(event: MouseEvent<HTMLAnchorElement>) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
     const section = document.getElementById(to)
     if (!section) return
@@ -50,7 +51,7 @@ function SectionLink({ to, children, ...props }) {
   return <a {...props} href={`#${to}`} onClick={navigate}>{children}</a>
 }
 
-// The one checkout button. Goes straight to Stripe once STRIPE_PREORDER_URL is set (src/config.js).
+// The one checkout button. Goes straight to Stripe once STRIPE_PREORDER_URL is set (src/config.ts).
 function PreorderButton() {
   if (STRIPE_PREORDER_URL) {
     return <a className="button button-buy" href={STRIPE_PREORDER_URL}>Preorder · ${PREORDER_PRICE} <span aria-hidden="true">→</span></a>
@@ -131,7 +132,7 @@ function Sticker() {
         </defs>
         <circle cx="100" cy="100" r="98" className="sticker-disc" />
         <g className="sticker-ring">
-          <text><textPath href="#sticker-ring" textLength="448" lengthAdjust="spacing">PREORDER · FITS A PURSE · ONE SLOT IS YOURS ·</textPath></text>
+          <text><textPath href="#sticker-ring" textLength="448" lengthAdjust="spacing">PREORDER · FITS A PURSE · THE SPACE IS YOURS ·</textPath></text>
         </g>
       </svg>
       <strong>${PREORDER_PRICE}</strong>
@@ -141,24 +142,27 @@ function Sticker() {
 
 // The two launch colorways. They float, lean toward the pointer, and swap places when you pick one.
 // Any click on either pouch swaps which one is in front.
-const other = (key) => (key === 'fuchsia' ? 'ivory' : 'fuchsia')
+type Colorway = 'fuchsia' | 'ivory'
+const other = (key: Colorway): Colorway => (key === 'fuchsia' ? 'ivory' : 'fuchsia')
+
+type PouchEntry = [Colorway, (typeof POUCHES)[Colorway]]
 
 function HeroPouches() {
-  const [front, setFront] = useState('fuchsia')
-  const ref = useRef(null)
+  const [front, setFront] = useState<Colorway>('fuchsia')
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = ref.current
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     let frame = 0
-    function onMove(event) {
+    function onMove(event: PointerEvent) {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
-        const box = el.getBoundingClientRect()
+        const box = el!.getBoundingClientRect()
         const x = (event.clientX - box.left) / box.width - 0.5
         const y = (event.clientY - box.top) / box.height - 0.5
-        el.style.setProperty('--px', Math.max(-1, Math.min(1, x * 2)).toFixed(3))
-        el.style.setProperty('--py', Math.max(-1, Math.min(1, y * 2)).toFixed(3))
+        el!.style.setProperty('--px', Math.max(-1, Math.min(1, x * 2)).toFixed(3))
+        el!.style.setProperty('--py', Math.max(-1, Math.min(1, y * 2)).toFixed(3))
       })
     }
     window.addEventListener('pointermove', onMove, { passive: true })
@@ -169,7 +173,7 @@ function HeroPouches() {
     <figure className="hero-figure" ref={ref}>
       <div className="pouches">
         <Sticker />
-        {Object.entries(POUCHES).map(([key, pouch]) => (
+        {(Object.entries(POUCHES) as PouchEntry[]).map(([key, pouch]) => (
           <div key={key} className={`pouch pouch-${key}${front === key ? ' is-front' : ''}`}>
             <button type="button" className="pouch-float" aria-label={front === key ? `Swap to the ${other(key)} pouch` : `Show the ${pouch.name.toLowerCase()} pouch in front`} onClick={() => setFront(front === key ? other(key) : key)}>
               <img
@@ -190,7 +194,7 @@ function HeroPouches() {
       </div>
       <figcaption>
         <span className="swatches" role="group" aria-label="Colorway shown in front">
-          {Object.entries(POUCHES).map(([key, pouch]) => (
+          {(Object.entries(POUCHES) as PouchEntry[]).map(([key, pouch]) => (
             <button key={key} type="button" className={`swatch swatch-${key}`} aria-pressed={front === key} onClick={() => setFront(key)}>
               <i aria-hidden="true" />{pouch.name}
             </button>
@@ -202,7 +206,7 @@ function HeroPouches() {
   )
 }
 
-// The empty slot, cycling through things people might put in it.
+// The empty space, cycling through things people might put in it.
 function SlotIdeas() {
   const [index, setIndex] = useState(0)
   useEffect(() => {
@@ -212,7 +216,7 @@ function SlotIdeas() {
   }, [])
   return (
     <div className="slot-box">
-      <span className="slot-tag">Your slot</span>
+      <span className="slot-tag">Your space</span>
       <p className="slot-word" aria-hidden="true"><span key={index}>{SLOT_IDEAS[index]}</span></p>
       <p className="sr-only">For example: {SLOT_IDEAS.join(', ')}.</p>
     </div>
@@ -228,7 +232,7 @@ const FEATURES = [
 ]
 
 function PouchSection() {
-  const [active, setActive] = useState(null)
+  const [active, setActive] = useState<string | null>(null)
   return (
     <section className="pouch-section shell" id="pouch" tabIndex={-1} aria-labelledby="pouch-title" data-reveal>
       <div className="pouch-head">
@@ -310,7 +314,7 @@ function App() {
         <section className="kit shell" id="kit" tabIndex={-1} aria-labelledby="kit-title" data-reveal>
           <div className="kit-head">
             <h2 id="kit-title" tabIndex={-1}>What’s inside.</h2>
-            <p className="kit-hint">Nine essentials and one empty slot, in a 4.5 × 3 in. pouch.</p>
+            <p className="kit-hint">Nine essentials and one empty space, in a 4.5 × 3 in. pouch.</p>
           </div>
           <div className="kit-layout">
             <ol className="kit-items">
@@ -336,7 +340,7 @@ function App() {
         <ul className="facts shell" aria-label="Key facts">
           <li data-reveal><span>Price</span><strong>${PREORDER_PRICE}</strong><small>preorder · ${RETAIL_PRICE} at launch</small></li>
           <li data-reveal><span>Size</span><strong>4.5 × 3 in.</strong><small>smaller than an index card · about 0.9 in. thick packed (estimate)</small></li>
-          <li data-reveal><span>Inside</span><strong>9 items</strong><small>plus one slot that’s yours</small></li>
+          <li data-reveal><span>Inside</span><strong>9 items</strong><small>plus one empty space that’s yours</small></li>
           <li data-reveal><span>First batch</span><strong>Spring 2027</strong><small>Emory University · campus pickup</small></li>
         </ul>
 
@@ -346,7 +350,7 @@ function App() {
           <div className="shell slot-layout">
             <div className="slot-copy">
               <p className="eyebrow">Built in, left empty</p>
-              <h2 id="slot-title">One slot is yours.</h2>
+              <h2 id="slot-title">One space is yours.</h2>
               <p>Every kit comes with one space left empty on purpose. It’s part of the kit, not leftover room. Fill it with whatever you’d turn around for.</p>
             </div>
             <SlotIdeas />

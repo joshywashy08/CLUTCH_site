@@ -96,7 +96,7 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 .price span { font: 700 .74rem/1.25 var(--display); letter-spacing: .1em; text-transform: uppercase; }
 
 
-/* The two colorways. --px / --py follow the pointer (set in App.jsx). */
+/* The two colorways. --px / --py follow the pointer (set in App.tsx). */
 .hero-figure { --px: 0; --py: 0; }
 .pouches { position: relative; aspect-ratio: 5 / 4; }
 .pouch { position: absolute; width: 74%; pointer-events: none; transition: transform .7s var(--ease), filter .5s ease; }
@@ -124,6 +124,8 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 .swatch-fuchsia i { background: var(--fuchsia); }
 .swatch-ivory i { background: var(--ivory); }
 .swatch[aria-pressed='true'] { background: var(--block); color: var(--block-text); }
+/* The selected button flips to the block color, so its square's border flips too and stays visible. */
+.swatch[aria-pressed='true'] i { border-color: var(--block-text); }
 .caption-note { font-size: .78rem; color: var(--muted); }
 
 /* Signature: the pouch band, wrapped across the page at a slight angle. */
@@ -188,7 +190,7 @@ h2 { font-size: clamp(2.6rem, 5.4vw, 4.8rem); }
 .slot-word { font: 700 clamp(2.1rem, 4.6vw, 3.8rem)/1 var(--display); letter-spacing: -.03em; text-transform: uppercase; text-align: center; }
 .slot-word span { display: inline-block; }
 
-/* Early feedback (hidden until src/config.js has real quotes) */
+/* Early feedback (hidden until src/config.ts has real quotes) */
 .feedback { padding-top: clamp(36px, 4.5vw, 64px); }
 .feedback-note { margin-block: 12px 20px; max-width: 60ch; color: var(--muted); }
 .feedback-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; list-style: none; margin: 0; padding: 0; }

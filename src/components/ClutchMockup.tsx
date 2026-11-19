@@ -1,8 +1,13 @@
 import { useRef, useState } from 'react';
+import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 import './ClutchMockup.css';
 
 // 3D model of the pouch. Drag to turn it, or use the arrow keys. It only shows the pouch:
 // what's inside is listed beside it on the page, with a drawing of each item.
+
+// Inline styles here also set CSS custom properties (--c, --shade, --band-top).
+type Style = CSSProperties & Record<`--${string}`, string>;
+type Drag = { id: number; x: number; y: number; start: { x: number; y: number }; moved: boolean; touch: boolean };
 
 const COLORS = [
   { key: 'fuchsia', name: 'Fuchsia', value: '#d9327e' },
@@ -35,7 +40,7 @@ const LAYERS = Array.from({ length: STEPS * 2 + 1 }, (_, i) => {
   };
 });
 // Thickness of the pouch at a given distance in from a seam.
-const thick = (edge, pinch) => HALF * (edge >= pinch ? 1 : Math.sqrt(1 - (1 - edge / pinch) ** 2));
+const thick = (edge: number, pinch: number) => HALF * (edge >= pinch ? 1 : Math.sqrt(1 - (1 - edge / pinch) ** 2));
 // A few cross-sections fill the pouch in when it is seen close to edge-on, where the layers are only
 // lines. They are drawn only then: left in all the time, they cut hairlines into the front panel.
 const RIBS = [-152, -146, -138, -126, -110, -85, -45, 0, 45, 85, 110, 126, 138, 146, 152].map((x) => {
@@ -44,22 +49,22 @@ const RIBS = [-152, -146, -138, -126, -110, -85, -45, 0, 45, 85, 110, 126, 138, 
 });
 
 const REST = { x: -16, y: -24 };
-const clampX = (v) => Math.max(-70, Math.min(40, v));
+const clampX = (v: number) => Math.max(-70, Math.min(40, v));
 
 export default function ClutchMockup() {
   const [color, setColor] = useState(COLORS[0]);
   const [rot, setRot] = useState(REST);
   const [dragging, setDragging] = useState(false);
   const [touched, setTouched] = useState(false);
-  const drag = useRef(null);
+  const drag = useRef<Drag | null>(null);
 
   // Drag to rotate. Mouse turns both ways; touch turns sideways only, so the page still scrolls.
-  const onPointerDown = (e) => {
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (e.button > 0) return;
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, start: rot, moved: false, touch: e.pointerType !== 'mouse' };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
-  const onPointerMove = (e) => {
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     const dx = e.clientX - d.x;
@@ -68,15 +73,15 @@ export default function ClutchMockup() {
     if (!d.moved) { d.moved = true; setDragging(true); setTouched(true); }
     setRot({ x: d.touch ? d.start.x : clampX(d.start.x - dy * 0.4), y: d.start.y + dx * 0.5 });
   };
-  const endDrag = (e) => {
+  const endDrag = (e: PointerEvent<HTMLDivElement>) => {
     if (!drag.current || drag.current.id !== e.pointerId) return;
     drag.current = null;
     setDragging(false);
   };
 
   // Keyboard: arrow keys turn the model when the stage has focus.
-  const onKeyDown = (e) => {
-    const step = { ArrowLeft: [0, -15], ArrowRight: [0, 15], ArrowUp: [10, 0], ArrowDown: [-10, 0] }[e.key];
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = ({ ArrowLeft: [0, -15], ArrowRight: [0, 15], ArrowUp: [10, 0], ArrowDown: [-10, 0] } as Record<string, [number, number]>)[e.key];
     if (!step) return;
     e.preventDefault();
     setTouched(true);
@@ -86,7 +91,7 @@ export default function ClutchMockup() {
   const edgeOn = Math.abs(Math.cos((rot.y * Math.PI) / 180)) < 0.3;
 
   return (
-    <div className="clutch-mockup" style={{ '--c': color.value }}>
+    <div className="clutch-mockup" style={{ '--c': color.value } as Style}>
       <div
         className={'stage' + (dragging ? ' dragging' : '') + (touched ? ' touched' : '')}
         tabIndex={0}
@@ -102,9 +107,9 @@ export default function ClutchMockup() {
           <div className="ground" aria-hidden="true" />
           <div className="sway">
             <div className="rig" style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)` }}>
-              {edgeOn && RIBS.map((style, i) => <div key={'x' + i} className="rib" style={style}><div className="band" /></div>)}
+              {edgeOn && RIBS.map((style, i) => <div key={'x' + i} className="rib" style={style as Style}><div className="band" /></div>)}
               {LAYERS.map((l) => (
-                <div key={l.k} className={'layer' + (l.k === 0 ? ' seam' : '') + (l.k === STEPS ? ' front' : '')} style={l.style}>
+                <div key={l.k} className={'layer' + (l.k === 0 ? ' seam' : '') + (l.k === STEPS ? ' front' : '')} style={l.style as Style}>
                   <div className="band">{l.k === STEPS && <span>CLUTCH</span>}</div>
                   {l.k === STEPS && <span className="zip" aria-hidden="true"><span className="teeth" /><span className="pull" /></span>}
                 </div>

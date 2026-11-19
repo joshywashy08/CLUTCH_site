@@ -22,4 +22,5 @@ export const RETAIL_PRICE = 15
 // Example:
 //   { quote: 'What they said.', name: 'First name L.', context: 'Emory student, saw the concept site' },
 // ─────────────────────────────────────────────────────────────────────────────
-export const FEEDBACK = []
+export type Feedback = { quote: string; name: string; context: string }
+export const FEEDBACK: Feedback[] = []

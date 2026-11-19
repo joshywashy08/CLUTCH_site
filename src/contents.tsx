@@ -14,7 +14,7 @@ export const CONTENTS = [
     art: { cls: 'i-mint', w: 44, h: 30, n: 2, body: null } },
   { key: 'card', short: 'Card', name: 'Instruction card', count: '1', text: 'How to use the drink test, signs someone may have been drugged, and who to call. It says plainly that a negative test is not a guarantee.',
     art: { cls: 'i-card', w: 104, h: 60, n: 1, body: <b>CLUTCH</b> } },
-  { key: 'slot', short: 'Your slot', name: 'Your slot', count: '+', text: 'Left empty on purpose, and it’s part of the kit. Lip gloss, travel cologne, earplugs, a hair tie: whatever you’d turn around for.',
+  { key: 'slot', short: 'Empty space', name: 'Your empty space', count: '+', text: 'Left empty on purpose, and it’s part of the kit. Lip gloss, travel cologne, earplugs, a hair tie: whatever you’d turn around for.',
     art: { cls: 'i-slot', w: 104, h: 40, n: 1, body: <span>Your item</span> } },
 ];
 

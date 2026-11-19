@@ -12,7 +12,7 @@
 .clutch-mockup .rig { transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
 .clutch-mockup .dragging .rig { transition: none; }
 
-/* Pouch body: soft, not a box. A stack of layers from back to front (sizes set in ClutchMockup.jsx),
+/* Pouch body: soft, not a box. A stack of layers from back to front (sizes set in ClutchMockup.tsx),
    widest at the seam and stepping in toward the front and back panels. Each layer is shaded a
    little darker the closer it is to the seam, which reads as the curve of the vinyl. */
 .clutch-mockup .layer, .clutch-mockup .rib { position: absolute; overflow: hidden; background-color: var(--c); background-image: linear-gradient(100deg, rgba(0, 0, 0, calc(var(--shade, .2) * .55)), rgba(0, 0, 0, calc(var(--shade, .2) * 1.3))); transition: background-color .4s ease; }
@@ -43,6 +43,7 @@
 .clutch-mockup .color, .clutch-mockup .reset { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 2px solid var(--text); background: transparent; color: var(--text); font: 700 12px/1 'Space Grotesk', sans-serif; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .clutch-mockup .color i { width: 15px; height: 15px; border: 2px solid var(--text); }
 .clutch-mockup .color[aria-pressed='true'] { background: var(--block); color: var(--block-text); }
+.clutch-mockup .color[aria-pressed='true'] i { border-color: var(--block-text); }
 .clutch-mockup .reset { border-color: transparent; text-decoration: underline; text-underline-offset: 4px; }
 .clutch-mockup .notes { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 
