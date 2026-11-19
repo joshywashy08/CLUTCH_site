@@ -1,432 +1,169 @@
 import { useEffect, useRef, useState } from 'react'
-import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from 'react'
-import ivory1200 from './assets/pouch-ivory-1200.webp'
-import ivory640 from './assets/pouch-ivory-640.webp'
-import fuchsia1200 from './assets/pouch-fuchsia-1200.webp'
-import fuchsia640 from './assets/pouch-fuchsia-640.webp'
 import './App.css'
-import ClutchMockup from './components/ClutchMockup'
-import { CONTENTS } from './contents'
-import { FEEDBACK, GROUP_BOX_SIZE, GROUP_ORDER_EMAIL, PREORDER_PRICE, RETAIL_PRICE, STRIPE_PREORDER_URL } from './config'
+import { EXPLORE_LABEL, FAQ, HEADLINE, HEADLINE_MARK, PREORDER_PRICE, RETAIL_PRICE } from './copy'
+import { FRAMES, FRAME_H, FRAME_W, loadSheet, paintFrame } from './zip'
 
-// Group orders go by email until there is a checkout for them. The message starts with the three things we need to quote.
-const GROUP_MAILTO = GROUP_ORDER_EMAIL
-  ? `mailto:${GROUP_ORDER_EMAIL}?subject=${encodeURIComponent('CLUTCH box order')}&body=${encodeURIComponent('Organization or event:\nHow many kits:\nNeeded by:\n')}`
-  : ''
-
-// Keep every claim here true: no safety promises, no accuracy numbers.
-const questions: [string, ReactNode][] = [
-  ['What’s inside?', 'A drink test, two condoms, two bandages, a vomit bag, two mints and an instruction card, plus one empty space for whatever you’d turn around for: lip gloss, travel perfume, a hair tie.'],
-  ['Why not just grab this stuff myself?', 'You could, but people don’t, and you find out at 1 a.m. Clutch keeps it all in one pouch in your bag, in the amounts a night needs, for less than buying a full box of everything.'],
-  ['How much is it, and what colors?', `$${PREORDER_PRICE} if you preorder, $${RETAIL_PRICE} at launch, in fuchsia or ivory. The pouch is reusable: restock it from your own drawer or with a Clutch refill (coming soon).`],
-  ['When and where do I get one?', <>The first batch is for Emory University in spring 2027, picked up on campus. Buying for a chapter, club or event? Boxes start at {GROUP_BOX_SIZE} kits: {GROUP_MAILTO ? <a href={GROUP_MAILTO}>ask for a price</a> : 'group orders open soon'}.</>],
-  ['What can the drink test tell me?', 'It checks a drop of your drink for drugs commonly used to spike drinks: GHB, ketamine and benzodiazepines like Valium and Xanax. Full directions are on the card in the pouch. A negative result is not a guarantee: if you or a friend feel wrong, get help and call 911.'],
-  ['What’s next?', <>Clutch Pocket: a smaller, vertical pouch for nights when you only have your pockets, in slate or ivory. It’s still a concept. <a href="/pocket/">See the Pocket</a>.</>],
+// What is in the pouch. Names and counts only.
+const CONTENTS: [number, string][] = [
+  [1, 'Drink test'],
+  [2, 'Condoms'],
+  [2, 'Bandages'],
+  [2, 'Mints'],
+  [1, 'Instruction card'],
 ]
 
-// One plain sentence for the hero, built from the same list as the "What's inside" section.
-const INSIDE_LINE = (() => {
-  const parts = CONTENTS.filter((c) => c.key !== 'slot').map((c) => `${c.count === '1' ? 'a' : 'two'} ${c.short.toLowerCase()}`)
-  const line = `${parts.join(', ')} and one empty space for your own thing.`
-  return line[0].toUpperCase() + line.slice(1)
-})()
-
-const POUCHES = {
-  fuchsia: { name: 'Fuchsia', src: fuchsia1200, small: fuchsia640, alt: 'Fuchsia Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
-  ivory: { name: 'Ivory', src: ivory1200, small: ivory640, alt: 'Ivory Clutch pouch with a zipper along the top and a black band reading CLUTCH in white.' },
+// The headline, with one phrase underlined.
+function Headline() {
+  const at = HEADLINE_MARK ? HEADLINE.indexOf(HEADLINE_MARK) : -1
+  if (at < 0) return <>{HEADLINE}</>
+  return <>{HEADLINE.slice(0, at)}<mark>{HEADLINE_MARK}</mark>{HEADLINE.slice(at + HEADLINE_MARK.length)}</>
 }
 
-// Things that fit the empty space (about 2.8 × 0.9 in. in the model). Keep them small enough to be true.
-const SLOT_IDEAS = ['Lip gloss', 'Travel cologne', 'Earplugs', 'A hair tie', 'Bobby pins', 'A folded $20', 'A spare key']
+const ZIP_MS = 260 // how long the zipper takes, top to bottom
 
-const BAND = ['Came in CLUTCH', 'Fits a purse', 'Fuchsia or ivory', 'Space for your stuff', 'Boxes for chapters and events', `$${PREORDER_PRICE} preorder`]
+// The product. Click the pouch: the zipper slides down and the pouch moves aside, then everything inside is laid
+// out next to it. Click again and it zips back up. The laid-out items are drawings for now (about 150 units to the inch), each with its name on it.
+function Product() {
+  const [open, setOpen] = useState(false)    // where the zipper is heading
+  const [shown, setShown] = useState(false)  // contents are laid out (only once the zipper is fully down)
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const sheet = useRef<HTMLImageElement | null>(null)
+  const frame = useRef(0)
+  const raf = useRef(0)
 
-function SectionLink({ to, children, ...props }: { to: string; children: ReactNode } & Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'onClick'>) {
-  function navigate(event: MouseEvent<HTMLAnchorElement>) {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-    const section = document.getElementById(to)
-    if (!section) return
-    event.preventDefault()
-    section.focus({ preventScroll: true })
-    // The header is sticky, so it is always "in view" and scrollIntoView does nothing. Scroll the page instead.
-    if (to === 'top') window.scrollTo({ top: 0 })
-    else section.scrollIntoView()
-  }
-
-  return <a {...props} href={`#${to}`} onClick={navigate}>{children}</a>
-}
-
-// The one checkout button. Goes straight to Stripe once STRIPE_PREORDER_URL is set (src/config.ts).
-function PreorderButton() {
-  if (STRIPE_PREORDER_URL) {
-    return <a className="button button-buy" href={STRIPE_PREORDER_URL}>Preorder · ${PREORDER_PRICE} <span aria-hidden="true">→</span></a>
-  }
-  return <span className="button button-buy is-soon" aria-disabled="true">Preorders open soon</span>
-}
-
-// Group orders: one email, since every box is quoted by hand for now.
-function GroupButton() {
-  if (GROUP_MAILTO) return <a className="button button-buy" href={GROUP_MAILTO}>Ask about a box <span aria-hidden="true">→</span></a>
-  return <span className="button button-buy is-soon" aria-disabled="true">Group orders open soon</span>
-}
-
-// Header shortcut: straight to Stripe when live, otherwise to the preorder section.
-function PreorderShortcut() {
-  const label = <>Preorder <span className="nav-price">${PREORDER_PRICE}</span></>
-  if (STRIPE_PREORDER_URL) return <a className="nav-buy" href={STRIPE_PREORDER_URL}>{label}</a>
-  return <SectionLink className="nav-buy" to="preorder">{label}</SectionLink>
-}
-
-function ThemeToggle() {
-  const [isDark, setIsDark] = useState(() => {
-    const theme = document.documentElement.dataset.theme
-    return theme ? theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
-  })
+  const paint = () => paintFrame(canvas.current, sheet.current, frame.current)
 
   useEffect(() => {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-    function syncSystemTheme() {
-      if (!document.documentElement.dataset.theme) setIsDark(systemTheme.matches)
-    }
-    syncSystemTheme()
-    systemTheme.addEventListener('change', syncSystemTheme)
-    return () => systemTheme.removeEventListener('change', syncSystemTheme)
+    loadSheet().then((img) => {
+      sheet.current = img
+      paint()
+    }, () => {})
+    return () => cancelAnimationFrame(raf.current)
   }, [])
 
-  function toggleTheme() {
-    const theme = isDark ? 'light' : 'dark'
-    document.documentElement.dataset.theme = theme
-    setIsDark(!isDark)
-    try {
-      localStorage.setItem('clutch-theme', theme)
-    } catch {
-      // The theme still applies to the current page.
+  function toggle() {
+    const next = !open
+    const target = next ? FRAMES - 1 : 0
+    const from = frame.current
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const ms = (ZIP_MS * Math.abs(target - from)) / (FRAMES - 1)
+    setOpen(next)
+    if (!next) setShown(false)
+    cancelAnimationFrame(raf.current)
+    let start = 0
+    const step = (now: number) => {
+      start ||= now
+      const t = still || ms === 0 ? 1 : Math.min(1, (now - start) / ms)
+      frame.current = Math.round(from + (target - from) * t)
+      paint()
+      if (t < 1) raf.current = requestAnimationFrame(step)
+      else if (next) setShown(true)
     }
+    raf.current = requestAnimationFrame(step)
   }
 
   return (
-    <button className="theme-toggle" type="button" aria-label="Dark mode" aria-pressed={isDark} onClick={toggleTheme}>
-      <span aria-hidden="true">{isDark ? '☀' : '☾'}</span>
-    </button>
-  )
-}
-
-function Wordmark() {
-  return <SectionLink className="wordmark" to="top" aria-label="Clutch, back to top">CLUTCH</SectionLink>
-}
-
-// Fades sections in as they scroll into view. Skipped when the visitor prefers reduced motion.
-function useScrollReveal() {
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
-    const root = document.documentElement
-    root.classList.add('reveal-on')
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        entry.target.classList.add('is-in')
-        observer.unobserve(entry.target)
-      }
-    }, { threshold: 0.12 })
-    document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el))
-    return () => { observer.disconnect(); root.classList.remove('reveal-on') }
-  }, [])
-}
-
-// A round sticker whose text ring turns slowly.
-function Sticker() {
-  return (
-    <div className="sticker" aria-hidden="true">
-      <svg viewBox="0 0 200 200">
-        <defs>
-          <path id="sticker-ring" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0" />
-        </defs>
-        <circle cx="100" cy="100" r="98" className="sticker-disc" />
-        <g className="sticker-ring">
-          <text><textPath href="#sticker-ring" textLength="448" lengthAdjust="spacing">PREORDER · FITS A PURSE · THE SPACE IS YOURS ·</textPath></text>
-        </g>
-      </svg>
-      <strong>${PREORDER_PRICE}</strong>
+    <div className="panel">
+      <span className="logo">CLUTCH</span>
+      <div className={'stack' + (open ? ' is-open' : '')}>
+        <button type="button" className="pouch" aria-expanded={open} aria-controls="inside" onClick={toggle}>
+          <canvas
+            ref={canvas}
+            className="zip"
+            width={FRAME_W}
+            height={FRAME_H}
+            role="img"
+            aria-label="Slate pouch standing upright, with a zipper down the right side and a black band reading CLUTCH in white."
+          />
+          <span className="cue">{open ? 'Close' : 'Open'}</span>
+        </button>
+        {shown && (
+          <svg id="inside" className="inside" viewBox="0 0 730 1110" role="img" aria-label="What comes out of the pouch: an instruction card, two condoms, a drink test, two bandages and two mints.">
+            <rect className="in-light" x="40" y="30" width="300" height="525" rx="10" />
+            <rect className="in-ink" x="85" y="252" width="210" height="58" />
+            <text className="in-logo" x="194" y="291" textAnchor="middle">CLUTCH</text>
+            <rect className="in-dark" x="390" y="30" width="300" height="300" rx="8" />
+            <circle className="in-ring" cx="540" cy="180" r="98" />
+            <rect className="in-dark" x="390" y="350" width="300" height="300" rx="8" />
+            <circle className="in-ring" cx="540" cy="500" r="98" />
+            <rect className="in-light" x="40" y="600" width="150" height="450" rx="8" />
+            <rect className="in-window" x="85" y="660" width="60" height="150" rx="6" />
+            <line className="in-mark" x1="95" y1="705" x2="135" y2="705" />
+            <line className="in-mark" x1="95" y1="760" x2="135" y2="760" />
+            <rect className="in-light" x="225" y="600" width="115" height="450" rx="57" />
+            <rect className="in-window" x="240" y="715" width="85" height="220" rx="6" />
+            <rect className="in-light" x="405" y="700" width="270" height="150" rx="40" />
+            <rect className="in-light" x="405" y="880" width="270" height="150" rx="40" />
+            <text className="in-name" x="190" y="405" textAnchor="middle">Instruction</text>
+            <text className="in-name" x="190" y="445" textAnchor="middle">card</text>
+            <text className="in-name is-light" x="540" y="192" textAnchor="middle">Condom</text>
+            <text className="in-name is-light" x="540" y="512" textAnchor="middle">Condom</text>
+            <text className="in-name" transform="translate(127 930) rotate(-90)" textAnchor="middle">Drink test</text>
+            <text className="in-name" transform="translate(294 825) rotate(-90)" textAnchor="middle">2 Bandages</text>
+            <text className="in-name" x="540" y="787" textAnchor="middle">Mint</text>
+            <text className="in-name" x="540" y="967" textAnchor="middle">Mint</text>
+          </svg>
+        )}
+      </div>
     </div>
   )
 }
 
-// The two launch colorways. They float, lean toward the pointer, and swap places when you pick one.
-// Any click on either pouch swaps which one is in front.
-type Colorway = 'fuchsia' | 'ivory'
-const other = (key: Colorway): Colorway => (key === 'fuchsia' ? 'ivory' : 'fuchsia')
-
-type PouchEntry = [Colorway, (typeof POUCHES)[Colorway]]
-
-function HeroPouches() {
-  const [front, setFront] = useState<Colorway>('fuchsia')
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    let frame = 0
-    function onMove(event: PointerEvent) {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const box = el!.getBoundingClientRect()
-        const x = (event.clientX - box.left) / box.width - 0.5
-        const y = (event.clientY - box.top) / box.height - 0.5
-        el!.style.setProperty('--px', Math.max(-1, Math.min(1, x * 2)).toFixed(3))
-        el!.style.setProperty('--py', Math.max(-1, Math.min(1, y * 2)).toFixed(3))
-      })
-    }
-    window.addEventListener('pointermove', onMove, { passive: true })
-    return () => { window.removeEventListener('pointermove', onMove); cancelAnimationFrame(frame) }
-  }, [])
-
-  return (
-    <figure className="hero-figure" ref={ref}>
-      <div className="pouches">
-        <Sticker />
-        {(Object.entries(POUCHES) as PouchEntry[]).map(([key, pouch]) => (
-          <div key={key} className={`pouch pouch-${key}${front === key ? ' is-front' : ''}`}>
-            <button type="button" className="pouch-float" aria-label={front === key ? `Swap to the ${other(key)} pouch` : `Show the ${pouch.name.toLowerCase()} pouch in front`} onClick={() => setFront(front === key ? other(key) : key)}>
-              <img
-                src={pouch.src}
-                srcSet={`${pouch.small} 640w, ${pouch.src} 1200w`}
-                sizes="(max-width: 700px) 78vw, 36vw"
-                alt={pouch.alt}
-                width="1200"
-                height="897"
-                fetchPriority={key === 'fuchsia' ? 'high' : undefined}
-                draggable="false"
-              />
-              {/* Only the pouch body takes clicks, not the transparent padding and shadow around it. */}
-              <span className="pouch-hit" aria-hidden="true" />
-            </button>
-          </div>
-        ))}
-      </div>
-      <figcaption>
-        <span className="swatches" role="group" aria-label="Colorway shown in front">
-          {(Object.entries(POUCHES) as PouchEntry[]).map(([key, pouch]) => (
-            <button key={key} type="button" className={`swatch swatch-${key}`} aria-pressed={front === key} onClick={() => setFront(key)}>
-              <i aria-hidden="true" />{pouch.name}
-            </button>
-          ))}
-        </span>
-        <span className="caption-note">Concept rendered in Blender · 4.5 × 3 in.</span>
-      </figcaption>
-    </figure>
-  )
-}
-
-// The empty space, cycling through things people might put in it.
-function SlotIdeas() {
-  const [index, setIndex] = useState(0)
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setInterval(() => setIndex((n) => (n + 1) % SLOT_IDEAS.length), 1800)
-    return () => clearInterval(id)
-  }, [])
-  return (
-    <div className="slot-box">
-      <span className="slot-tag">Your space</span>
-      <p className="slot-word" aria-hidden="true"><span key={index}>{SLOT_IDEAS[index]}</span></p>
-      <p className="sr-only">For example: {SLOT_IDEAS.join(', ')}.</p>
-    </div>
-  )
-}
-
-// The pouch, explained: numbered markers on the render, matched to the list beside it.
-const FEATURES = [
-  { n: '1', title: 'The band', text: 'One black band all the way around, with CLUTCH in white. It’s the logo, and it’s what people notice first.', x: 50, y: 45 },
-  { n: '2', title: 'The zipper', text: 'Runs along the top of the front, so nothing falls out until you open it.', x: 62, y: 21 },
-  { n: '3', title: 'The size', text: '4.5 × 3 in. and about 0.9 in. thick packed. It fits a small purse or a clutch.', x: 84, y: 43 },
-  { n: '4', title: 'It stays', text: 'Reusable vinyl in fuchsia or ivory. Restock it from your own drawer or with a Clutch refill (coming soon).', x: 25, y: 66 },
-]
-
-function PouchSection() {
-  const [active, setActive] = useState<string | null>(null)
-  return (
-    <section className="pouch-section shell" id="pouch" tabIndex={-1} aria-labelledby="pouch-title" data-reveal>
-      <div className="pouch-head">
-        <p className="eyebrow">The product</p>
-        <h2 id="pouch-title">Clutch up.</h2>
-        <p>Be the one who has the thing someone needs. The pouch keeps a night’s worth of essentials in one place, stays in your bag after, and gets restocked instead of thrown out.</p>
-      </div>
-      <div className="pouch-layout">
-        <figure className={'pouch-diagram' + (active ? ' has-active' : '')}>
-          <img src={fuchsia1200} srcSet={`${fuchsia640} 640w, ${fuchsia1200} 1200w`} sizes="(max-width: 900px) 92vw, 58vw" alt="Fuchsia Clutch pouch seen from above, with numbered markers on the band, the zipper and the edge." width="1200" height="897" loading="lazy" />
-          <span className="dim dim-w" aria-hidden="true"><b>4.5 in.</b></span>
-          <span className="dim dim-h" aria-hidden="true"><b>3 in.</b></span>
-          {FEATURES.map((f) => (
-            <span key={f.n} className={'marker' + (active === f.n ? ' is-active' : '')} style={{ left: `${f.x}%`, top: `${f.y}%` }} aria-hidden="true">{f.n}</span>
-          ))}
-        </figure>
-        <ol className="feature-list">
-          {FEATURES.map((f) => (
-            <li key={f.n} onPointerEnter={() => setActive(f.n)} onPointerLeave={() => setActive(null)}>
-              <button type="button" aria-pressed={active === f.n} onClick={() => setActive(active === f.n ? null : f.n)} onFocus={() => setActive(f.n)} onBlur={() => setActive(null)}>
-                <span className="feature-n" aria-hidden="true">{f.n}</span>
-                <span><strong>{f.title}</strong>{f.text}</span>
-              </button>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  )
-}
+// Questions that have an answer. While developing, unanswered ones show too, so the layout can be judged.
+const QUESTIONS = FAQ.filter(([, answer]) => answer || import.meta.env.DEV)
 
 function App() {
-  useScrollReveal()
   return (
-    <>
-      <SectionLink className="skip-link" to="main">Skip to content</SectionLink>
-      <header className="site-header" id="top" tabIndex={-1}>
-        <div className="shell nav-layout">
-          <Wordmark />
-          <nav aria-label="Main navigation">
-            <SectionLink to="pouch">Pouch</SectionLink>
-            <SectionLink to="kit">Kit</SectionLink>
-            <SectionLink to="faq">FAQ</SectionLink>
-            <PreorderShortcut />
-            <ThemeToggle />
-          </nav>
-        </div>
-      </header>
+    <main>
+      <section className="hero" aria-labelledby="headline">
+        <Product />
 
-      <main id="main" tabIndex={-1}>
-        <section className="hero shell" aria-labelledby="hero-title">
-          <div className="hero-head">
-            <p className="eyebrow">The pouch for going out</p>
-            <h1 id="hero-title"><span className="h1-line">Came in</span> <span className="h1-band">Clutch.</span></h1>
-            <p className="hero-description">A small pouch, packed for the night. Zip it, drop it in your bag, go.</p>
-          </div>
-          <HeroPouches />
-          <div className="hero-inside">
-            <p className="hero-inside-label">Inside every pouch</p>
-            <p className="inside-line">{INSIDE_LINE}</p>
-            <SectionLink className="text-link" to="kit-title">What each one is for <span aria-hidden="true">↓</span></SectionLink>
-          </div>
-          <div className="hero-actions">
-            <PreorderButton />
-            <p className="price"><strong>${PREORDER_PRICE}</strong><span>preorder<br />${RETAIL_PRICE} at launch</span></p>
-            <SectionLink className="text-link group-link" to="groups">Buying for a chapter, club or event? <span aria-hidden="true">↓</span></SectionLink>
-          </div>
-        </section>
-
-        <div className="wristband">
-          <div className="wristband-track">
-            {[0, 1].map((copy) => (
-              <p key={copy} aria-hidden={copy === 1 ? 'true' : undefined}>
-                {[...BAND, ...BAND].map((text, i) => <span key={i} aria-hidden={i >= BAND.length ? 'true' : undefined}>{text}</span>)}
-              </p>
+        <div className="pitch">
+          <h1 id="headline"><Headline /></h1>
+          <ul className="contents" aria-label="What's inside">
+            {CONTENTS.map(([count, name]) => (
+              <li key={name}><b>{count}</b>{name}</li>
             ))}
+          </ul>
+          <p className="price">
+            <s>{RETAIL_PRICE} retail</s>
+            <strong>{PREORDER_PRICE} preorder</strong>
+          </p>
+          <div className="actions">
+            {/* Placeholder: preorders are not open yet, so this button does nothing. */}
+            <button type="button" className="button">Preorder</button>
+            {EXPLORE_LABEL && <a className="button is-line" href="/explore">{EXPLORE_LABEL}</a>}
           </div>
         </div>
+      </section>
 
-        <section className="kit shell" id="kit" tabIndex={-1} aria-labelledby="kit-title" data-reveal>
-          <div className="kit-head">
-            <h2 id="kit-title" tabIndex={-1}>What’s inside.</h2>
-            <p className="kit-hint">Nine essentials and one empty space, in a 4.5 × 3 in. pouch.</p>
-          </div>
-          <div className="kit-layout">
-            <ol className="kit-items">
-              {CONTENTS.map((c) => (
-                <li key={c.key} className={c.key === 'slot' ? 'is-slot' : undefined}>
-                  <span className={'kit-art' + (c.art.stack ? ' stack' : '')} aria-hidden="true">
-                    {Array.from({ length: c.art.n }, (_, k) => (
-                      <span key={k} className={`item ${c.art.cls}`} style={{ width: c.art.w, height: c.art.h }}>{c.art.body}</span>
-                    ))}
-                  </span>
-                  <span className="kit-text"><strong><b aria-hidden="true">{c.count}</b>{c.name}</strong>{c.text}</span>
-                </li>
-              ))}
-            </ol>
-            <div className="kit-model">
-              <ClutchMockup />
-            </div>
-          </div>
-        </section>
-
-        <PouchSection />
-
-        <ul className="facts shell" aria-label="Key facts">
-          <li data-reveal><span>Price</span><strong>${PREORDER_PRICE}</strong><small>preorder · ${RETAIL_PRICE} at launch</small></li>
-          <li data-reveal><span>Size</span><strong>4.5 × 3 in.</strong><small>smaller than an index card · about 0.9 in. thick packed (estimate)</small></li>
-          <li data-reveal><span>Inside</span><strong>9 items</strong><small>plus one empty space that’s yours</small></li>
-          <li data-reveal><span>First batch</span><strong>Spring 2027</strong><small>Emory University · campus pickup</small></li>
-        </ul>
-
-
-
-        <section className="slot-section" aria-labelledby="slot-title" data-reveal>
-          <div className="shell slot-layout">
-            <div className="slot-copy">
-              <p className="eyebrow">Built in, left empty</p>
-              <h2 id="slot-title">One space is yours.</h2>
-              <p>Every kit comes with one space left empty on purpose. It’s part of the kit, not leftover room. Fill it with whatever you’d turn around for.</p>
-            </div>
-            <SlotIdeas />
-          </div>
-        </section>
-
-        {FEEDBACK.length > 0 && (
-          <section className="feedback shell" aria-labelledby="feedback-title" data-reveal>
-            <h2 id="feedback-title">Early feedback.</h2>
-            <p className="feedback-note">From people who have seen the concept. Kits aren’t on sale yet, so these aren’t buyer reviews.</p>
-            <ul className="feedback-list">
-              {FEEDBACK.map(({ quote, name, context }) => (
-                <li key={name + quote}>
-                  <blockquote>“{quote}”</blockquote>
-                  <p><strong>{name}</strong><span>{context}</span></p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section className="preorder shell" id="preorder" tabIndex={-1} aria-labelledby="preorder-title">
-          <div className="preorder-card" data-reveal>
-            <div>
-              <p className="eyebrow">Emory goes first</p>
-              <h2 id="preorder-title">Preorder. <span>${PREORDER_PRICE}.</span></h2>
-              <p>The first batch goes to Emory University in spring 2027. Lock in ${PREORDER_PRICE} now; it’s ${RETAIL_PRICE} at launch.</p>
-            </div>
-            <PreorderButton />
-          </div>
-        </section>
-
-        <section className="preorder groups shell" id="groups" tabIndex={-1} aria-labelledby="groups-title">
-          <div className="preorder-card" data-reveal>
-            <div>
-              <p className="eyebrow">Chapters, clubs and events</p>
-              <h2 id="groups-title">Order a <span>box.</span></h2>
-              <p>One for every member, date or guest. Boxes start at {GROUP_BOX_SIZE} kits for formals, date parties, bid day, festivals and orientation. Tell us how many and when, and we’ll send a price.</p>
-            </div>
-            <GroupButton />
-          </div>
-        </section>
-
-        <section className="faq shell" id="faq" tabIndex={-1} aria-labelledby="faq-title" data-reveal>
-          <h2 id="faq-title">FAQ.</h2>
-          <div className="faq-list">
-            {questions.map(([question, answer]) => (
+      {/* The pouch at true scale between a phone and a bank card. 100 units = 1 inch. */}
+      <section className={'more' + (QUESTIONS.length ? '' : ' is-solo')}>
+        {QUESTIONS.length > 0 && (
+          <div className="faq">
+            <h2>FAQ</h2>
+            {QUESTIONS.map(([question, answer]) => (
               <details key={question}>
-                <summary>{question}<span aria-hidden="true" /></summary>
-                <p>{answer}</p>
+                <summary>{question}</summary>
+                {answer && <p>{answer}</p>}
               </details>
             ))}
           </div>
-        </section>
-      </main>
-
-      <footer className="site-footer">
-        <div className="shell footer-layout">
-          <Wordmark />
-          <p>Made by Emory students.</p>
-          <SectionLink className="text-link" to="top">Back to top <span aria-hidden="true">↑</span></SectionLink>
+        )}
+        <div className="size">
+        <svg viewBox="0 0 1100 690" role="img" aria-label="Size comparison at the same scale: a phone at 5.8 by 2.8 inches, the pouch at 4.25 by 2.75 inches, and a bank card at 3.4 by 2.1 inches.">
+          <rect className="sc-line" x="110" y="19" width="282" height="581" rx="38" />
+          <rect className="sc-line" x="221" y="36" width="60" height="16" rx="8" />
+          <rect className="sc-pouch" x="462" y="175" width="275" height="425" rx="34" />
+          <rect className="sc-band" x="462" y="420" width="275" height="62" />
+          <text className="sc-word" x="599" y="462" textAnchor="middle">CLUTCH</text>
+          <rect className="sc-line" x="807" y="263" width="213" height="337" rx="16" />
+          <rect className="sc-line" x="835" y="300" width="42" height="56" rx="6" />
+          <text className="sc-label" x="599" y="662" textAnchor="middle">2.75 × 4.25 in.</text>
+        </svg>
         </div>
-      </footer>
-    </>
+      </section>
+    </main>
   )
 }
 

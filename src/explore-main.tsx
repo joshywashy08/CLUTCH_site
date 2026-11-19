@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import Pocket from './Pocket'
+import Explore from './Explore'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Pocket />
+    <Explore />
   </StrictMode>,
 )

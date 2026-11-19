@@ -1,16 +1,8 @@
 import react from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
-// Two pages: the homepage, and the Pocket concept at /pocket/ (public, but not linked from the homepage).
+// Two pages: the home page, and /explore (work the zipper, take things out).
 export default defineConfig({
   plugins: [react()],
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(import.meta.dirname, 'index.html'),
-        pocket: resolve(import.meta.dirname, 'pocket/index.html'),
-      },
-    },
-  },
+  build: { rollupOptions: { input: { main: 'index.html', explore: 'explore/index.html' } } },
 })
