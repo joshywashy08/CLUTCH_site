@@ -1,22 +1,24 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import bandageImg from './assets/item-bandage.webp'
 import cardImg from './assets/item-card.webp'
 import condomImg from './assets/item-condom.webp'
 import mintImg from './assets/item-mint.webp'
 import testImg from './assets/item-test.webp'
-import { HINT_CLOSE, HINT_OPEN } from './copy'
+import { HINT_CLOSE, HINT_OPEN, HINT_ROTATE } from './copy'
 import './Explore.css'
-import { TURN, loadSheet, paintFrame } from './zip'
+import { OPEN_YAW, VIEW_H, VIEW_W, createPouch3D, hasWebGL } from './pouch3d'
+import type { Pose, Pouch3D } from './pouch3d'
+import { ZIP, loadSheet, paintFrame } from './zip'
 
 // Everything here is measured in inches and drawn at one scale (1em = 1 inch inside .bench).
-// The pouch and the items are Blender renders. Item sizes are working assumptions until samples arrive.
-const POUCH_W = 2.802        // the pouch image, a hair wider than the 2.75 in pouch
-const POUCH_H = 4.404
-const LAST = TURN.frames - 1
-const TURN_MS = 800          // unzip, turn and move, all at once
-const BACK_EACH_MS = 150     // gap between one item starting back and the next
-const BACK_MS = 420          // one item's trip back into the pouch
+// The pouch is a live 3D model; the items are Blender renders. Item sizes are working assumptions until samples arrive.
+const TURN_MS = 800          // unzip, turn and move aside, all at once
+const HOME_MS = 300          // turning back to the opening before the items go in
+const EACH_MS = 150          // gap between one item setting off and the next
+const ITEM_MS = 420          // one item's trip out of the pouch, or back into it
+const DRAG = 0.01            // radians of turn per pixel dragged
+const MAX_PITCH = 1.35       // how far it tips toward or away from us
 
 type Thing = { id: string; name: string; src: string; w: number; h: number; row: [number, number]; stack: [number, number] }
 
@@ -32,16 +34,24 @@ const THINGS: Thing[] = [
   { id: 'mint-2', name: 'Mint', src: mintImg, w: 1.8, h: 1, row: [6.97, 0.12], stack: [2.4, 5.7] },
 ]
 
+const smooth = (q: number) => q * q * (3 - 2 * q)
+// The same angle, written as the one nearest to `near` (so a turn never goes the long way round).
+const nearest = (angle: number, near: number) => angle + Math.round((near - angle) / (2 * Math.PI)) * 2 * Math.PI
+
 function Explore() {
   const stage = useRef<HTMLElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const sheet = useRef<HTMLImageElement | null>(null)
-  const frame = useRef(0)
+  const model = useRef<Pouch3D | null>(null)
+  const flat = useRef<HTMLImageElement | null>(null)   // the frame sheet, only when 3D is not available
+  const pose = useRef<Pose>({ open: 0, yaw: 0, pitch: 0 })
+  const grip = useRef({ x: 0, y: 0, yaw: 0, pitch: 0, moved: false, on: false })
   const raf = useRef(0)
   const timer = useRef(0)
+  const [live] = useState(hasWebGL)
   const [box, setBox] = useState({ w: 0, h: 0 })
   const [open, setOpen] = useState(false)   // the pouch: unzipped, turned and moved aside
   const [out, setOut] = useState(false)     // the items: laid out
+  const [want, setWant] = useState(false)   // what the last click asked for; the line under the pouch follows it
   const [busy, setBusy] = useState(false)
 
   useLayoutEffect(() => {
@@ -58,29 +68,68 @@ function Explore() {
     }
   }, [])
 
+  // Layout, in inches. Wide: pouch on the left, items in a row to its right. Narrow: pouch on top, items under it.
+  const wide = box.w >= 900
+  const W = wide ? 12.5 : 5.3
+  const viewH = Math.max(box.h, 480)
+  const u = box.w ? (wide ? Math.min(box.w / W, viewH / 6.4) : box.w / W) : 0
+  const Hclosed = u ? viewH / u : 0
+  const H = wide ? Hclosed : open ? Math.max(Hclosed, 14.3) : Hclosed
+  const closedAt: [number, number] = [(W - VIEW_W) / 2, (Hclosed - VIEW_H) / 2 - 0.3]
+  const openAt: [number, number] = wide ? [-0.1, closedAt[1]] : [0, 1.1]
+  const [px, py] = open ? openAt : closedAt
+  const rowAt: [number, number] = [openAt[0] + VIEW_W + 0.05, openAt[1] + VIEW_H / 2]
+  const stackAt: [number, number] = [0.5, openAt[1] + VIEW_H + 1.1]
+  // The zipper's gap on the turned pouch: where the items come out and go back in.
+  const mouth: [number, number] = [openAt[0] + VIEW_W * 0.5, openAt[1] + VIEW_H * 0.5]
+
+  const draw = () => {
+    if (model.current) model.current.set(pose.current)
+    else paintFrame(canvas.current, flat.current, ZIP, Math.round(pose.current.open * (ZIP.frames - 1)))
+  }
+
+  // Start the model once the canvas exists, and keep it sized to the layout.
   useEffect(() => {
-    loadSheet(TURN).then((img) => {
-      sheet.current = img
-      paintFrame(canvas.current, img, TURN, frame.current)
-    }, () => {})
-    return () => {
-      cancelAnimationFrame(raf.current)
-      window.clearTimeout(timer.current)
+    const el = canvas.current
+    if (!el || !u) return
+    if (live) {
+      if (!model.current) {
+        try {
+          model.current = createPouch3D(el)
+        } catch {
+          return
+        }
+      }
+      model.current.resize(Math.round(VIEW_W * u), Math.round(VIEW_H * u))
+      model.current.set(pose.current)
+    } else if (!flat.current) {
+      loadSheet(ZIP).then((img) => {
+        flat.current = img
+        draw()
+      }, () => {})
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [u, live])
+  useEffect(() => () => {
+    cancelAnimationFrame(raf.current)
+    window.clearTimeout(timer.current)
+    model.current?.dispose()
+    model.current = null
   }, [])
 
   const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  // Play the pouch frames from where they are to `target`, then call `done`.
-  function play(target: number, done: () => void) {
-    const from = frame.current
-    const ms = still() ? 0 : (TURN_MS * Math.abs(target - from)) / LAST
+  // Move the pouch from the pose it is in to `to` over `ms`, then call `done`.
+  function glide(to: Pose, ms: number, done: () => void) {
+    const from = { ...pose.current }
+    const time = still() ? 0 : ms
     let start = 0
     const step = (now: number) => {
       start ||= now
-      const t = ms === 0 ? 1 : Math.min(1, (now - start) / ms)
-      frame.current = Math.round(from + (target - from) * t)
-      paintFrame(canvas.current, sheet.current, TURN, frame.current)
+      const t = time === 0 ? 1 : Math.min(1, (now - start) / time)
+      const e = smooth(t)
+      pose.current = { open: from.open + (to.open - from.open) * t, yaw: from.yaw + (to.yaw - from.yaw) * e, pitch: from.pitch + (to.pitch - from.pitch) * e }
+      draw()
       if (t < 1) raf.current = requestAnimationFrame(step)
       else done()
     }
@@ -88,39 +137,57 @@ function Explore() {
     raf.current = requestAnimationFrame(step)
   }
 
-  function click() {
-    if (busy) return
-    setBusy(true)
-    if (!open) {
-      // Open: the zipper, the turn, the move and the items, all together.
-      setOpen(true)
-      setOut(true)
-      play(LAST, () => setBusy(false))
-    } else {
-      // Close: the items go back one by one, then the pouch zips up and turns back.
-      setOut(false)
-      const wait = still() ? 0 : BACK_EACH_MS * (THINGS.length - 1) + BACK_MS
-      timer.current = window.setTimeout(() => {
-        setOpen(false)
-        play(0, () => setBusy(false))
-      }, wait)
+  // Drag anywhere on the pouch to turn it: sideways spins it, up and down tips it.
+  function down(e: ReactPointerEvent<HTMLButtonElement>) {
+    grip.current = { x: e.clientX, y: e.clientY, yaw: pose.current.yaw, pitch: pose.current.pitch, moved: false, on: !busy && !!model.current }
+  }
+  function move(e: ReactPointerEvent<HTMLButtonElement>) {
+    const g = grip.current
+    if (!g.on || busy || (e.pointerType === 'mouse' && e.buttons === 0)) return
+    const dx = e.clientX - g.x, dy = e.clientY - g.y
+    if (!g.moved && Math.hypot(dx, dy) < 6) return
+    if (!g.moved) {
+      g.moved = true
+      e.currentTarget.setPointerCapture(e.pointerId)
     }
+    pose.current = { ...pose.current, yaw: g.yaw + dx * DRAG, pitch: Math.max(-MAX_PITCH, Math.min(MAX_PITCH, g.pitch + dy * DRAG)) }
+    draw()
+  }
+  function up() {
+    grip.current.on = false
   }
 
-  // Layout, in inches. Wide: pouch on the left, items in a row to its right. Narrow: pouch on top, items under it.
-  const wide = box.w >= 900
-  const W = wide ? 12.4 : 5.3
-  const viewH = Math.max(box.h, 480)
-  const u = box.w ? (wide ? Math.min(box.w / W, viewH / 6.2) : box.w / W) : 0
-  const Hclosed = u ? viewH / u : 0
-  const H = wide ? Hclosed : open ? Math.max(Hclosed, 14.1) : Hclosed
-  const closedAt: [number, number] = [(W - POUCH_W) / 2, (Hclosed - POUCH_H) / 2 - 0.25]
-  const openAt: [number, number] = wide ? [0.15, closedAt[1]] : [0.2, 1.35]
-  const [px, py] = open ? openAt : closedAt
-  const rowAt: [number, number] = [openAt[0] + POUCH_W + 0.25, openAt[1] + POUCH_H / 2]
-  const stackAt: [number, number] = [0.5, openAt[1] + POUCH_H + 1.1]
-  // Where the items come from and go back to: the zipper when closed, the opening (mid-pouch after the turn) when open.
-  const mouth: [number, number] = open ? [openAt[0] + POUCH_W * 0.5, openAt[1] + POUCH_H * 0.5] : [closedAt[0] + POUCH_W * 0.87, closedAt[1] + POUCH_H * 0.5]
+  function click() {
+    if (grip.current.moved) {
+      grip.current.moved = false // that was a drag, not a click
+      return
+    }
+    if (busy) return
+    setBusy(true)
+    const items = still() ? 0 : EACH_MS * (THINGS.length - 1) + ITEM_MS
+    const yaw = pose.current.yaw
+    if (!open) {
+      // Open: the zipper comes down as the pouch turns to show the opening and moves aside, then the items come out one by one.
+      setWant(true)
+      setOpen(true)
+      glide({ open: 1, yaw: nearest(OPEN_YAW, yaw), pitch: 0 }, TURN_MS, () => {
+        setOut(true)
+        timer.current = window.setTimeout(() => setBusy(false), items)
+      })
+    } else {
+      // Close: turn back to the opening if it was moved, the items go in one by one, then it zips up and faces front.
+      setWant(false)
+      const home = { open: 1, yaw: nearest(OPEN_YAW, yaw), pitch: 0 }
+      const moved = Math.abs(home.yaw - yaw) > 0.01 || Math.abs(pose.current.pitch) > 0.01
+      glide(home, moved ? HOME_MS : 0, () => {
+        setOut(false)
+        timer.current = window.setTimeout(() => {
+          setOpen(false)
+          glide({ open: 0, yaw: nearest(0, pose.current.yaw), pitch: 0 }, TURN_MS, () => setBusy(false))
+        }, items)
+      })
+    }
+  }
 
   const stageStyle: CSSProperties = { height: u ? H * u : undefined }
   const bench: CSSProperties = { left: (box.w - W * u) / 2, width: W * u, height: H * u, fontSize: u }
@@ -133,19 +200,21 @@ function Explore() {
           {THINGS.map((t, i) => {
             const [x, y] = wide ? [rowAt[0] + t.row[0], rowAt[1] + t.row[1]] : [stackAt[0] + t.stack[0], stackAt[1] + t.stack[1]]
             const back = `${mouth[0] - (x + t.w / 2)}em, ${mouth[1] - (y + t.h / 2)}em`
-            const delay = i * BACK_EACH_MS
+            const delay = i * EACH_MS
+            // In the pouch, an item sits at the gap, squeezed thin as if edge-on, and unseen.
+            // It never fades: it is solid from the moment it leaves the gap until the moment it is back in.
             const style: CSSProperties = {
               left: `${x}em`,
               top: `${y}em`,
               width: `${t.w}em`,
               height: `${t.h}em`,
-              transform: out ? 'none' : `translate(${back}) scale(.5)`,
+              transform: out ? 'none' : `translate(${back}) scale(.06, .55)`,
               opacity: out ? 1 : 0,
-              transition: out
-                ? `transform ${TURN_MS}ms cubic-bezier(.2, .7, .2, 1), opacity 260ms ease-out`
-                : open
-                  ? `transform ${BACK_MS}ms ease-in ${delay}ms, opacity 160ms ease-in ${delay + BACK_MS - 160}ms`
-                  : 'none',
+              transition: !open
+                ? 'none'
+                : out
+                  ? `transform ${ITEM_MS}ms cubic-bezier(.2, .7, .2, 1) ${delay}ms, opacity 0ms linear ${delay}ms`
+                  : `transform ${ITEM_MS}ms ease-in ${delay}ms, opacity 0ms linear ${delay + ITEM_MS}ms`,
             }
             return <img key={t.id} className="thing" src={t.src} alt={t.name} draggable={false} style={style} />
           })}
@@ -155,10 +224,25 @@ function Explore() {
             className="pouch-x"
             aria-expanded={open}
             onClick={click}
-            style={{ left: `${px}em`, top: `${py}em`, width: `${POUCH_W}em`, height: `${POUCH_H}em`, transitionDuration: `${TURN_MS}ms` }}
+            onPointerDown={down}
+            onPointerMove={move}
+            onPointerUp={up}
+            onPointerCancel={up}
+            style={{ left: `${px}em`, top: `${py}em`, width: `${VIEW_W}em`, height: `${VIEW_H}em`, transitionDuration: `${TURN_MS}ms` }}
           >
-            <canvas ref={canvas} width={TURN.w} height={TURN.h} role="img" aria-label="Slate pouch with a zipper down the right side and a black band reading CLUTCH in white." />
-            <span className="hint">{out ? HINT_CLOSE : HINT_OPEN}</span>
+            <canvas
+              ref={canvas}
+              width={live ? undefined : ZIP.w}
+              height={live ? undefined : ZIP.h}
+              className={live ? undefined : 'is-flat'}
+              role="img"
+              aria-label="Slate pouch with a zipper down the right side and a black band reading CLUTCH in white."
+            />
+            <span className="hint">
+              {want ? HINT_CLOSE : HINT_OPEN}
+              {live && <br />}
+              {live && HINT_ROTATE}
+            </span>
           </button>
         </div>
       )}

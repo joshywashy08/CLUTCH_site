@@ -5,14 +5,17 @@
 .bench { position: absolute; top: 0; }
 .bench > * { position: absolute; }
 
-/* The pouch is the button. It moves aside while its frames play (zipper down, pouch turning). */
-.pouch-x { font-size: 1em; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; transition-property: left, top; transition-timing-function: ease-in-out; -webkit-tap-highlight-color: transparent; z-index: 3; }
-.pouch-x canvas { display: block; width: 100%; height: 100%; filter: drop-shadow(0 .14em .16em rgba(18, 19, 24, .3)); }
+/* The pouch is the button: a click opens or closes it, a drag turns it (sideways) and tips it (up and down).
+   It moves aside while its frames play (zipper down, pouch turning). */
+.pouch-x { font-size: 1em; padding: 0; border: 0; background: none; color: inherit; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; transition-property: left, top; transition-timing-function: ease-in-out; -webkit-tap-highlight-color: transparent; z-index: 2; }
+.pouch-x canvas { display: block; width: 100%; height: 100%; }
+/* Without 3D the canvas shows the flat frames instead, kept in proportion. */
+.pouch-x canvas.is-flat { object-fit: contain; padding: .25em; box-sizing: border-box; }
 .pouch-x:focus-visible { outline: 3px solid var(--ink); outline-offset: 6px; }
-.hint { position: absolute; left: 50%; top: calc(100% + .22em); translate: -50% 0; white-space: nowrap; font: 500 clamp(15px, .2em, 22px)/1.2 var(--sharp); }
+.hint { position: absolute; left: 50%; top: calc(100% - .05em); translate: -50% 0; white-space: nowrap; font: 500 clamp(15px, .2em, 22px)/1.5 var(--sharp); }
 
-/* The things in the pouch. Hidden, they sit behind the pouch; shown, each is in its place. They pass under the pouch on the way. */
-.thing { display: block; z-index: 2; box-shadow: 0 .05em .09em rgba(18, 19, 24, .24); user-select: none; -webkit-user-select: none; pointer-events: none; }
+/* The things in the pouch. Hidden, each sits squeezed thin at the zipper's gap; shown, each is in its place. */
+.thing { display: block; z-index: 3; box-shadow: 0 .05em .09em rgba(18, 19, 24, .24); user-select: none; -webkit-user-select: none; pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .pouch-x, .thing { transition: none !important; }

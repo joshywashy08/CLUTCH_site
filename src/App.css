@@ -46,6 +46,9 @@ a.button:hover, button.button:hover { background: transparent; color: var(--text
 /* Preorder, with the button to the explore page under it. */
 .actions { align-self: flex-start; display: flex; flex-direction: column; gap: 12px; }
 .actions .button { align-self: stretch; cursor: pointer; }
+/* Preorder: the one fuchsia thing on the page. */
+.button.is-hot { border-color: var(--fuchsia); background: var(--fuchsia); color: #fff; }
+button.button.is-hot:hover { background: transparent; color: var(--fuchsia); }
 .button.is-line { background: transparent; color: var(--text); }
 a.button.is-line:hover { background: var(--block); color: var(--block-text); }
 

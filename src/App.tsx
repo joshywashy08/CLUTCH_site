@@ -128,7 +128,7 @@ function App() {
           </p>
           <div className="actions">
             {/* Placeholder: preorders are not open yet, so this button does nothing. */}
-            <button type="button" className="button">{PREORDER_LABEL}</button>
+            <button type="button" className="button is-hot">{PREORDER_LABEL}</button>
             {EXPLORE_LABEL && <a className="button is-line" href="/explore">{EXPLORE_LABEL}</a>}
           </div>
         </div>
