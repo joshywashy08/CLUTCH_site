@@ -19,6 +19,8 @@ const EACH_MS = 150          // gap between one item setting off and the next
 const ITEM_MS = 420          // one item's trip out of the pouch, or back into it
 const DRAG = 0.01            // radians of turn per pixel dragged
 const MAX_PITCH = 1.35       // how far it tips toward or away from us
+const LIFE = 96              // pixels per inch at life size (one CSS inch). Nothing is ever drawn larger than this.
+const EDGE = 32              // clear space kept at each side of a wide screen, in pixels
 
 type Thing = { id: string; name: string; src: string; w: number; h: number; row: [number, number]; stack: [number, number] }
 
@@ -72,7 +74,8 @@ function Explore() {
   const wide = box.w >= 900
   const W = wide ? 12.5 : 5.3
   const viewH = Math.max(box.h, 480)
-  const u = box.w ? (wide ? Math.min(box.w / W, viewH / 6.4) : box.w / W) : 0
+  // The scale: as large as the screen allows, but never larger than life size.
+  const u = box.w ? Math.min(wide ? Math.min((box.w - 2 * EDGE) / W, viewH / 6.4) : box.w / W, LIFE) : 0
   const Hclosed = u ? viewH / u : 0
   const H = wide ? Hclosed : open ? Math.max(Hclosed, 14.3) : Hclosed
   const closedAt: [number, number] = [(W - VIEW_W) / 2, (Hclosed - VIEW_H) / 2 - 0.3]
