@@ -48,4 +48,4 @@ img { display: block; max-width: 100%; }
 a, button { -webkit-tap-highlight-color: transparent; }
 
 /* The logo: a black box with CLUTCH in white, top left of each page. */
-.logo { position: absolute; left: clamp(16px, 2.4vw, 32px); top: clamp(16px, 2.4vw, 32px); z-index: 3; padding: 9px 12px 9px 16px; background: var(--ink); color: #fff; font: 700 1rem/1 var(--display); letter-spacing: .32em; }
+.logo { position: absolute; left: clamp(16px, 2.4vw, 32px); top: clamp(16px, 2.4vw, 32px); z-index: 3; padding: 12px 15px 12px 21px; background: var(--ink); color: #fff; font: 700 1.3rem/1 var(--display); letter-spacing: .32em; }

@@ -3,10 +3,10 @@
 // Headline. From Josh's page sketch, Nov 18.
 export const HEADLINE = 'Be the friend who came in clutch with this kit for going out.'
 // The part of the headline that gets underlined. Must match the headline exactly, or leave it empty.
-export const HEADLINE_MARK = 'came in clutch'
+export const HEADLINE_MARK = ''
 
 // Prices. The retail price shows crossed out next to the preorder price.
-export const RETAIL_PRICE = '$10'
+export const RETAIL_PRICE = '$12'
 export const PREORDER_PRICE = '$8'
 
 // The button that opens the page where you can work the zipper and take things out. Leave empty to hide the button.

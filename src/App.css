@@ -39,7 +39,8 @@ h1 mark { color: inherit; background: linear-gradient(currentColor, currentColor
 .button { align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 38px; border: 2px solid var(--block); border-radius: 999px; background: var(--block); color: var(--block-text); font: 700 1.05rem/1 var(--sharp); letter-spacing: .12em; text-transform: uppercase; }
 a.button:hover, button.button:hover { background: transparent; color: var(--text); }
 .price { display: flex; align-items: baseline; gap: 16px; margin: 0; font: 500 clamp(1.3rem, 2vw, 1.7rem)/1 var(--sharp); }
-.price s { color: var(--muted); }
+/* The crossed-out price is set in Inter: a line through Space Grotesk's 1 reads as a 4. */
+.price s { color: var(--muted); font-family: Inter, system-ui, sans-serif; text-decoration-thickness: 2px; }
 .price strong { font-weight: 700; }
 /* Preorder, with the button to the explore page under it. */
 .actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -70,7 +71,7 @@ a.button.is-line:hover { background: var(--block); color: var(--block-text); }
 
 @media (max-width: 800px) {
   .hero, .more { grid-template-columns: 1fr; min-height: 0; }
-  .panel { padding: 64px 16px 20px; }
+  .panel { padding: 78px 16px 20px; }
   .stack { width: min(100%, 460px); }
   .actions .button { align-self: stretch; }
 }
